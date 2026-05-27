@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bebé&Euros — O teu primeiro orçamento de bebé</title>
+
+  <!-- Fontes: DM Sans para texto corrido, Playfair Display para títulos emocionais -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ========================================================
+       VARIÁVEIS DE COR E TEMA
+       Paleta: cremes quentes, terracota suave, verde-salva, branco
+    ======================================================== */
+    :root {
+      --cream:      #FAF6F0;
+      --cream-dark: #F2EBE0;
+      --blush:      #F0C8B0;
+      --terracota:  #C4694A;
+      --terracota-light: #E8896A;
+      --sage:       #7A9E87;
+      --sage-light: #A8C4B0;
+      --charcoal:   #2C2824;
+      --mid:        #7A6E64;
+      --light:      #B0A89A;
+      --white:      #FFFFFF;
+      --card-bg:    rgba(255,255,255,0.72);
+      --radius-sm:  12px;
+      --radius-md:  20px;
+      --radius-lg:  32px;
+      --shadow:     0 4px 24px rgba(44,40,36,0.08);
+      --shadow-lg:  0 12px 48px rgba(44,40,36,0.12);
+    }
+
+    /* ========================================================
+       RESET E BASE
+    ======================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background-color: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Fundo decorativo com círculos suaves */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--blush) 0%, transparent 70%);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -150px; left: -150px;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--sage-light) 0%, transparent 70%);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ========================================================
+       LAYOUT PRINCIPAL — wrapper central
+    ======================================================== */
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    /* ========================================================
+       HEADER / LOGO
+    ======================================================== */
+    .app-header {
+      text-align: center;
+      padding: 48px 0 32px;
+    }
+    .app-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terracota);
+    }
+    .app-logo .dot {
+      width: 8px; height: 8px;
+      background: var(--terracota);
+      border-radius: 50%;
+    }
+
+    /* ========================================================
+       ECRÃS (STEPS) — só um visível de cada vez
+    ======================================================== */
+    .screen {
+      display: none;
+      animation: fadeUp 0.45s ease both;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========================================================
+       TIPOGRAFIA GERAL
+    ======================================================== */
+    .display-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(28px, 5vw, 38px);
+      line-height: 1.2;
+      color: var(--charcoal);
+      margin-bottom: 12px;
+    }
+    .display-title em {
+      font-style: italic;
+      color: var(--terracota);
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--terracota);
+      margin-bottom: 8px;
+    }
+
+    /* ========================================================
+       BARRA DE PROGRESSO (steps 1-6)
+    ======================================================== */
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 36px;
+    }
+    .progress-dot {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: var(--cream-dark);
+      transition: background 0.4s ease;
+    }
+    .progress-dot.done   { background: var(--terracota); }
+    .progress-dot.active { background: var(--terracota-light); }
+
+    /* ========================================================
+       CARD CONTAINER
+    ======================================================== */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    /* ========================================================
+       INPUT DE DATA
+    ======================================================== */
+    .date-input-wrap {
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .date-input-wrap label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mid);
+      margin-bottom: 8px;
+    }
+    .date-input-wrap input[type="text"] {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--cream-dark);
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--charcoal);
+      letter-spacing: 0.05em;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .date-input-wrap input:focus {
+      border-color: var(--terracota-light);
+    }
+    .date-error {
+      font-size: 13px;
+      color: var(--terracota);
+      margin-top: 6px;
+      min-height: 18px;
+    }
+    /* Badge que mostra a etapa identificada */
+    .stage-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--sage-light);
+      color: var(--charcoal);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 100px;
+      margin-top: 16px;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .stage-badge.visible { opacity: 1; }
+    .stage-badge .icon { font-size: 16px; }
+
+    /* ========================================================
+       QUESTÕES DE ESCOLHA MÚLTIPLA
+    ======================================================== */
+    .question-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--charcoal);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--cream-dark);
+      background: var(--white);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--charcoal);
+      line-height: 1.5;
+    }
+    .option-btn:hover {
+      border-color: var(--terracota-light);
+      background: #FFF8F5;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+    .option-btn.selected {
+      border-color: var(--terracota);
+      background: #FFF8F5;
+    }
+    .option-number {
+      min-width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--cream-dark);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--mid);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .option-btn.selected .option-number {
+      background: var(--terracota);
+      color: var(--white);
+    }
+
+    /* Contador de pergunta */
+    .q-counter {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--light);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    /* ========================================================
+       BOTÃO PRIMÁRIO
+    ======================================================== */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: var(--terracota);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(196,105,74,0.3);
+    }
+    .btn-primary:hover {
+      background: var(--terracota-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(196,105,74,0.35);
+    }
+    .btn-primary:disabled {
+      background: var(--light);
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Botão secundário (voltar) */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--mid);
+      cursor: pointer;
+      padding: 8px 0;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--charcoal); }
+
+    /* ========================================================
+       ECRÃ DE LOADING (animação enquanto "calcula")
+    ======================================================== */
+    #screen-loading {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .loading-icon {
+      font-size: 56px;
+      animation: pulse 1.6s ease-in-out infinite;
+      margin-bottom: 24px;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.1); opacity: 0.7; }
+    }
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+    }
+    .loading-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--terracota);
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50%       { opacity: 1;   transform: scale(1); }
+    }
+
+    /* ========================================================
+       ECRÃ DE RESULTADOS
+    ======================================================== */
+
+    /* Cabeçalho de resultados com perfil */
+    .results-header {
+      text-align: center;
+      padding: 8px 0 24px;
+    }
+    .profile-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+    .profile-chip.economico  { background: #E8F4EC; color: var(--sage); }
+    .profile-chip.equilibrado{ background: #FFF3E0; color: #C4832A; }
+    .profile-chip.premium    { background: #FDE8E8; color: var(--terracota); }
+
+    /* Hero de valor anual */
+    .valor-hero {
+      background: linear-gradient(135deg, var(--terracota) 0%, var(--terracota-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: center;
+      color: var(--white);
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .valor-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+    }
+    .valor-hero .vh-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+    .valor-hero .vh-range {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(26px, 6vw, 40px);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .valor-hero .vh-sub {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 6px;
+    }
+    .valor-hero .vh-mensal {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border-radius: 100px;
+      padding: 6px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-top: 16px;
+    }
+
+    /* Grid de cards de categorias principais */
+    .top-cats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 480px) {
+      .top-cats-grid { grid-template-columns: 1fr; }
+    }
+    .cat-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: var(--radius-md);
+      padding: 18px 16px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .cat-card .cat-icon  { font-size: 26px; margin-bottom: 8px; }
+    .cat-card .cat-name  { font-size: 11px; font-weight: 600; color: var(--mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .cat-card .cat-value { font-size: 18px; font-weight: 600; color: var(--charcoal); }
+
+    /* Secção de etapa / timeline */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+    }
+    .section-desc {
+      font-size: 13px;
+      color: var(--mid);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* Linha de pico de despesas por etapa */
+    .stage-block {
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+    .stage-block .sb-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stage-icon-wrap {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stage-icon-wrap.gravida  { background: #FDE8DC; }
+    .stage-icon-wrap.recemnato{ background: #E8F4EC; }
+    .stage-icon-wrap.mes3     { background: #E8F0FD; }
+    .stage-icon-wrap.mes6     { background: #FDF8E8; }
+    .stage-icon-wrap.mes9     { background: #F0E8FD; }
+
+    .sb-title { font-size: 15px; font-weight: 600; }
+    .sb-period { font-size: 12px; color: var(--mid); }
+
+    /* Lista de top 3 dentro de cada etapa */
+    .sb-cats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .sb-cat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .sb-cat-left  { display: flex; align-items: center; gap: 8px; color: var(--charcoal); }
+    .sb-cat-icon  { font-size: 16px; }
+    .sb-cat-value { font-weight: 600; color: var(--terracota); }
+
+    /* Bar de fundo de progresso (visual) */
+    .sb-bar-wrap { height: 4px; background: var(--cream-dark); border-radius: 2px; margin-bottom: 14px; }
+    .sb-bar-fill { height: 100%; border-radius: 2px; background: var(--terracota-light); transition: width 1s ease; }
+
+    /* Decisão/evento importante */
+    .sb-decision {
+      background: var(--cream-dark);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--charcoal);
+      line-height: 1.5;
+    }
+    .sb-decision .sd-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terracota);
+      margin-bottom: 4px;
+    }
+
+    /* Highlight da etapa atual */
+    .stage-block.current-stage {
+      border: 2px solid var(--terracota);
+      position: relative;
+    }
+    .current-label {
+      position: absolute;
+      top: -10px; right: 16px;
+      background: var(--terracota);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 100px;
+    }
+
+    /* Nota de rodapé dos resultados */
+    .results-footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--light);
+      line-height: 1.7;
+      padding: 16px 0;
+    }
+
+    /* ========================================================
+       BOTÃO DE RECOMEÇAR
+    ======================================================== */
+    .btn-restart {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--mid);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: 2px solid var(--cream-dark);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .btn-restart:hover { border-color: var(--mid); color: var(--charcoal); }
+
+    /* ========================================================
+       ECRÃ DE BOAS VINDAS (intro)
+    ======================================================== */
+    .intro-illustration {
+      text-align: center;
+      font-size: 72px;
+      margin-bottom: 24px;
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    /* Separador visual */
+    .divider {
+      height: 1px;
+      background: var(--cream-dark);
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- LOGO / HEADER fixo em todos os ecrãs -->
+  <header class="app-header">
+    <div class="app-logo">
+      <span class="dot"></span>
+      Bebé &amp; Euros
+      <span class="dot"></span>
+    </div>
+  </header>
+
+  <!-- ========================================================
+       ECRÃ 0 — BOAS-VINDAS
+  ======================================================== -->
+  <div id="screen-intro" class="screen active">
+    <div class="intro-illustration">🌱</div>
+
+    <h1 class="display-title">
+      O teu primeiro<br/>
+      <em>orçamento de bebé</em>
+    </h1>
+    <p class="subtitle">
+      Adaptado à realidade portuguesa e ao perfil da tua família — para chegares à parentalidade com confiança financeira.
+    </p>
+
+    <div class="card">
+      <p class="section-label">Como funciona</p>
+      <p style="font-size:14px; color:var(--mid); line-height:1.7; margin-bottom:0">
+        Responde a <strong style="color:var(--charcoal)">6 perguntas simples</strong> sobre a tua data prevista e os hábitos da tua família. Em menos de 2 minutos recebes uma estimativa personalizada para o primeiro ano do teu bebé, dividida por etapas, com os momentos de maior despesa e as decisões mais importantes.
+      </p>
+    </div>
+
+    <button class="btn-primary" onclick="goTo('screen-date')">
+      Começar ✨
+    </button>
+  </div>
+
+  <!-- ========================================================
+       ECRÃ 1 — DATA DO PARTO / NASCIMENTO
+  ======================================================== -->
+  <div id="screen-date" class="screen">
+    <button class="btn-back" onclick="goTo('screen-intro')">← Voltar</button>
+
+    <div class="progress-bar" id="progress-1"></div>
+
+    <p class="section-label">Passo 1 de 6</p>
+    <h2 class="display-title">Quando chega o <em>bebé</em>?</h2>
+    <p class="subtitle">Indica a data prevista de parto ou a data de nascimento.</p>
+
+    <div class="card">
+      <div class="date-input-wrap">
+        <label for="date-input">Data (dd-mm-aaaa)</label>
+        <!-- Input de texto para aceitar formato dd-mm-aaaa -->
+        <input
+          type="text"
+          id="date-input"
+          placeholder="ex: 15-09-2025"
+          maxlength="10"
+          oninput="formatDateInput(this)"
+        />
+        <p class="date-error" id="date-error"></p>
+      </div>
+      <!-- Badge que aparece automaticamente após data válida -->
+      <div class="stage-badge" id="stage-badge">
+        <span class="icon">📍</span>
+        <span id="stage-badge-text">—</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-date-next" onclick="submitDate()" disabled>
+      Continuar →
+    </button>
+  </div>
+
+  <!-- ========================================================
+       ECRÃS 2 a 6 — QUESTÕES (gerados por JS)
+  ======================================================== -->
+  <div id="screen-q1" class="screen"></div>
+  <div id="screen-q2" class="screen"></div>
+  <div id="screen-q3" class="screen"></div>
+  <div id="screen-q4" class="screen"></div>
+  <div id="screen-q5" class="screen"></div>
+
+  <!-- ========================================================
+       ECRÃ DE LOADING
+  ======================================================== -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-icon">🧮</div>
+    <h2 class="display-title" style="font-size:24px">A calcular o teu plano…</h2>
+    <p class="subtitle">Estamos a preparar uma estimativa personalizada para a tua família.</p>
+    <div class="loading-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       ECRÃ DE RESULTADOS (preenchido por JS)
+  ======================================================== -->
+  <div id="screen-results" class="screen">
+    <!-- Conteúdo injetado pelo JS em renderResults() -->
+  </div>
+
+</div><!-- /app-wrapper -->
+
+
+<script>
+/* ============================================================
+   DADOS E CONFIGURAÇÃO
+   Todos os valores em euros, baseados em custos médios PT 2024
+============================================================ */
+
+// Questões com as 3 opções cada
+const QUESTIONS = [
+  {
+    id: 'q1',
+    text: 'Para compras recorrentes (fraldas, alimentação, higiene)…',
+    options: [
+      'Costumamos procurar promoções e poupar',
+      'Tentamos equilibrar qualidade e preço',
+      'Preferimos escolher o que for mais cómodo/prático'
+    ]
+  },
+  {
+    id: 'q2',
+    text: 'Para consultas e acompanhamento do bebé…',
+    options: [
+      'Preferimos usar o SNS sempre que possível',
+      'Mistura entre SNS e privado parece-nos ideal',
+      'Preferimos acompanhamento privado regular'
+    ]
+  },
+  {
+    id: 'q3',
+    text: 'Como se sentem em relação a artigos de bebé em segunda mão?',
+    options: [
+      'Faz todo o sentido para nós',
+      'Depende do tipo de artigo',
+      'Preferimos comprar tudo novo'
+    ]
+  },
+  {
+    id: 'q4',
+    text: 'Neste momento, querem sobretudo…',
+    options: [
+      'Perceber como reduzir custos ao máximo',
+      'Ter uma visão equilibrada das despesas',
+      'Simplificar decisões e ganhar tranquilidade'
+    ]
+  },
+  {
+    id: 'q5',
+    text: 'Em relação aos cuidados do bebé no primeiro ano…',
+    options: [
+      'Vamos tentar organizar-nos com apoio familiar / creche feliz',
+      'Ainda estamos a avaliar diferentes opções',
+      'É provável recorrermos a soluções privadas'
+    ]
+  }
+];
+
+// Perfis com valores anuais totais, copy e multiplicadores por categoria
+const PROFILES = {
+  economico: {
+    label: '🌿 Perfil Económico',
+    chip: 'economico',
+    headline: 'Cada euro bem pensado',
+    desc: 'A tua abordagem prioriza poupança inteligente sem abdicar do essencial. Com planeamento, o primeiro ano pode ser mais acessível do que imaginas.',
+    totalMin: 4200,
+    totalMax: 6500,
+    mensalMin: 350,
+    mensalMax: 541
+  },
+  equilibrado: {
+    label: '⚖️ Perfil Equilibrado',
+    chip: 'equilibrado',
+    headline: 'Conforto com consciência',
+    desc: 'A tua família busca o equilíbrio entre qualidade e custo. Um plano realista que permite boas escolhas sem surpresas.',
+    totalMin: 7000,
+    totalMax: 10500,
+    mensalMin: 583,
+    mensalMax: 875
+  },
+  premium: {
+    label: '✨ Perfil Premium',
+    chip: 'premium',
+    headline: 'Tranquilidade como prioridade',
+    desc: 'Valorizas conveniência e qualidade. O teu plano reflete um primeiro ano confortável, com apoios profissionais e produtos de eleição.',
+    totalMin: 12000,
+    totalMax: 18000,
+    mensalMin: 1000,
+    mensalMax: 1500
+  }
+};
+
+// Categorias de despesa com ícones e valores anuais por perfil
+// Formato: [econom, equilib, premium]
+const CATEGORIES = [
+  { name: 'Fraldas & Higiene',     icon: '🧴', values: [600, 900, 1300] },
+  { name: 'Alimentação',           icon: '🍼', values: [500, 750, 1100] },
+  { name: 'Cuidados de Saúde',     icon: '🏥', values: [300, 700, 1800] },
+  { name: 'Roupa & Calçado',       icon: '👕', values: [300, 500, 900]  },
+  { name: 'Equipamento & Berço',   icon: '🛏️', values: [500, 900, 1800] },
+  { name: 'Carrinho & Cadeira',    icon: '🛒', values: [300, 600, 1400] },
+  { name: 'Creche / Ama',          icon: '🏡', values: [1200, 2400, 5400]},
+  { name: 'Entretenimento',        icon: '🧸', values: [150, 300, 600]  },
+  { name: 'Imprevistos',           icon: '🔖', values: [300, 600, 1000] }
+];
+
+// Etapas da jornada com título, período, ícone, cor e categorias de pico
+// Os valores de pico são proporcionais (índices das categorias acima × multiplicador)
+const STAGES = [
+  {
+    id: 'gravida',
+    title: 'Gravidez & Preparação',
+    period: 'Antes do nascimento',
+    icon: '🤰',
+    colorClass: 'gravida',
+    // Índices das top 3 categorias nesta fase
+    topCatIndexes: [4, 5, 2],
+    // Peso relativo desta fase no orçamento total (%)
+    weight: 0.25,
+    decisions: {
+      economico:   '📋 Decide com antecedência se optam por creche comparticipada ou apoio familiar — pode poupar até €200/mês.',
+      equilibrado: '📋 Compara carrinho e berço em 2ª mão certificados: poupas 30-50% sem comprometer a segurança.',
+      premium:     '📋 Equaciona contrato com seguro de saúde pediátrico antes do nascimento para cobrir os primeiros anos.'
+    }
+  },
+  {
+    id: 'recemnato',
+    title: 'Recém-nascido',
+    period: '0 – 3 meses',
+    icon: '👶',
+    colorClass: 'recemnato',
+    topCatIndexes: [0, 2, 1],
+    weight: 0.22,
+    decisions: {
+      economico:   '📋 Amamentação reduz custo em fórmula em €80-120/mês. Subsídio parental partilhado pode aumentar o apoio total.',
+      equilibrado: '📋 Cria um fundo de imprevistos de 1 mês de despesas — esta fase tem as maiores variações não planeadas.',
+      premium:     '📋 Consulta de enfermagem de saúde familiar pós-parto (privada): ~€60-80 por visita, grande impacto na tranquilidade.'
+    }
+  },
+  {
+    id: 'mes3',
+    title: 'Primeiros Progressos',
+    period: '3 – 6 meses',
+    icon: '🌼',
+    colorClass: 'mes3',
+    topCatIndexes: [6, 0, 3],
+    weight: 0.20,
+    decisions: {
+      economico:   '📋 Inicia o processo de candidatura à creche comparticipada agora — as listas de espera podem ser longas.',
+      equilibrado: '📋 Avalia se a licença parental alargada vale financeiramente — depende dos rendimentos do casal.',
+      premium:     '📋 Começa a avaliar programas de estimulação precoce privados (baby swim, música): custos de €50-120/mês por atividade.'
+    }
+  },
+  {
+    id: 'mes6',
+    title: 'Diversificação Alimentar',
+    period: '6 – 9 meses',
+    icon: '🥕',
+    colorClass: 'mes6',
+    topCatIndexes: [6, 1, 3],
+    weight: 0.18,
+    decisions: {
+      economico:   '📋 Papas caseiras reduzem custos em alimentação em até 60% face às industriais — um investimento de tempo.',
+      equilibrado: '📋 Fase de crescimento rápido: compra roupa em tamanhos maiores com antecedência em saldos.',
+      premium:     '📋 Consulta de nutrição pediátrica (~€60-80): ajuda a estruturar a diversificação e evitar ansiedade parental.'
+    }
+  },
+  {
+    id: 'mes9',
+    title: 'Autonomia & 1.º Aniversário',
+    period: '9 – 12 meses',
+    icon: '🎂',
+    colorClass: 'mes9',
+    topCatIndexes: [6, 7, 4],
+    weight: 0.15,
+    decisions: {
+      economico:   '📋 Cadeira de carro grupo 1 (9-18kg) é a compra mais importante desta fase — compara modelos seguros a partir de €120.',
+      equilibrado: '📋 Revê a creche ou ama ao entrar no segundo ano — preços sobem com a faixa etária em muitas respostas sociais.',
+      premium:     '📋 Avalia seguro de acidentes pessoais para criança — cobre hospitalização e assistência 24h a partir de €15/mês.'
+    }
+  }
+];
+
+/* ============================================================
+   ESTADO GLOBAL DA APP
+============================================================ */
+let state = {
+  babyDate: null,       // Date object
+  stage: null,          // 'gravida' | 'recemnato' | 'mes3' | 'mes6' | 'mes9' | 'ano1+'
+  answers: [],          // array de 0|1|2 (índice da opção escolhida) para cada questão
+  profile: null         // 'economico' | 'equilibrado' | 'premium'
+};
+
+/* ============================================================
+   NAVEGAÇÃO ENTRE ECRÃS
+============================================================ */
+function goTo(screenId) {
+  // Esconde todos os ecrãs
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // Mostra o ecrã pretendido
+  document.getElementById(screenId).classList.add('active');
+  // Faz scroll ao topo
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================
+   BARRA DE PROGRESSO
+   step = 1..6 (data + 5 questões)
+============================================================ */
+function renderProgress(containerId, step) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  let html = '';
+  for (let i = 1; i <= 6; i++) {
+    const cls = i < step ? 'done' : i === step ? 'active' : '';
+    html += `<div class="progress-dot ${cls}"></div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ============================================================
+   ECRÃ 1 — FORMATAÇÃO E VALIDAÇÃO DA DATA
+============================================================ */
+function formatDateInput(input) {
+  // Aplica máscara dd-mm-aaaa automaticamente
+  let v = input.value.replace(/\D/g, '').slice(0, 8);
+  if (v.length > 4)      v = v.slice(0,2) + '-' + v.slice(2,4) + '-' + v.slice(4);
+  else if (v.length > 2) v = v.slice(0,2) + '-' + v.slice(2);
+  input.value = v;
+  validateDate(v);
+}
+
+function validateDate(str) {
+  const errEl  = document.getElementById('date-error');
+  const badge  = document.getElementById('stage-badge');
+  const btnNext = document.getElementById('btn-date-next');
+
+  // Limpa estado anterior
+  errEl.textContent = '';
+  badge.classList.remove('visible');
+  btnNext.disabled = true;
+  state.babyDate = null;
+
+  if (str.length < 10) return; // ainda incompleto
+
+  // Faz parse dd-mm-aaaa
+  const parts = str.split('-');
+  if (parts.length !== 3) { errEl.textContent = 'Formato inválido. Usa dd-mm-aaaa.'; return; }
+  const [d, m, y] = parts.map(Number);
+  const date = new Date(y, m - 1, d);
+
+  // Verifica se é uma data real
+  if (date.getDate() !== d || date.getMonth() !== m - 1 || date.getFullYear() !== y) {
+    errEl.textContent = 'Data inválida. Verifica o dia, mês e ano.';
+    return;
+  }
+
+  // Limites razoáveis
+  const now  = new Date();
+  const minY = new Date(now); minY.setMonth(now.getMonth() - 2); // máximo 2 meses no passado
+  const maxY = new Date(now); maxY.setMonth(now.getMonth() + 10); // máximo 10 meses no futuro
+
+  if (date < minY) { errEl.textContent = 'Data muito no passado. Usa uma data de nascimento recente ou futura.'; return; }
+  if (date > maxY) { errEl.textContent = 'Data muito no futuro. Máximo 10 meses à frente.'; return; }
+
+  // Data válida → detecta etapa
+  state.babyDate = date;
+  state.stage = detectStage(date, now);
+
+  const stageLabels = {
+    gravida:   '🤰 Estás na fase de preparação pré-natal',
+    recemnato: '👶 O teu bebé é recém-nascido (0-3 meses)',
+    mes3:      '🌼 Bebé entre os 3 e os 6 meses',
+    mes6:      '🥕 Bebé entre os 6 e os 9 meses',
+    mes9:      '🎂 Bebé entre os 9 e os 12 meses',
+    'ano1+':   '🥳 Bebé completou o primeiro ano!'
+  };
+
+  document.getElementById('stage-badge-text').textContent = stageLabels[state.stage] || '—';
+  badge.classList.add('visible');
+  btnNext.disabled = false;
+}
+
+// Detecta em que etapa da jornada o utilizador se encontra
+function detectStage(babyDate, now) {
+  const diffDays = Math.floor((now - babyDate) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0)   return 'gravida';       // data futura → grávida
+  if (diffDays < 90)  return 'recemnato';     // 0-3 meses
+  if (diffDays < 180) return 'mes3';          // 3-6 meses
+  if (diffDays < 270) return 'mes6';          // 6-9 meses
+  if (diffDays < 365) return 'mes9';          // 9-12 meses
+  return 'ano1+';
+}
+
+function submitDate() {
+  goTo('screen-q1');
+  buildQuestion('screen-q1', 0, 2);
+  renderProgress('progress-q1', 2);
+}
+
+/* ============================================================
+   ECRÃS 2-6 — CONSTRUÇÃO DINÂMICA DAS QUESTÕES
+============================================================ */
+
+// qIndex = 0..4 (índice na array QUESTIONS)
+// step   = 2..6 (para a barra de progresso)
+function buildQuestion(screenId, qIndex, step) {
+  const q = QUESTIONS[qIndex];
+  const isLast = qIndex === 4;
+  const nextAction = isLast
+    ? 'submitAnswers()'
+    : `submitQuestion(${qIndex + 1}, ${step + 1})`;
+  const nextLabel = isLast ? 'Ver o meu plano 🎉' : 'Continuar →';
+  const prevScreen = qIndex === 0 ? 'screen-date' : `screen-q${qIndex}`;
+
+  const el = document.getElementById(screenId);
+  el.innerHTML = `
+    <button class="btn-back" onclick="goTo('${prevScreen}')">← Voltar</button>
+    <div class="progress-bar" id="progress-q${qIndex + 1}"></div>
+    <p class="section-label">Passo ${step} de 6</p>
+    <h2 class="display-title" style="font-size:22px; margin-bottom:8px">
+      Uma questão <em>rápida</em>
+    </h2>
+    <div class="card" style="margin-bottom:16px">
+      <p class="q-counter">Pergunta ${qIndex + 1} de 5</p>
+      <p class="question-title">${q.text}</p>
+      <div class="options-list">
+        ${q.options.map((opt, i) => `
+          <button
+            class="option-btn"
+            id="opt-${qIndex}-${i}"
+            onclick="selectOption(${qIndex}, ${i})"
+          >
+            <span class="option-number">${i + 1}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <button
+      class="btn-primary"
+      id="btn-q${qIndex + 1}-next"
+      onclick="${nextAction}"
+      disabled
+    >
+      ${nextLabel}
+    </button>
+  `;
+
+  renderProgress(`progress-q${qIndex + 1}`, step);
+
+  // Restaura seleção anterior se o user voltou
+  if (state.answers[qIndex] !== undefined) {
+    highlightOption(qIndex, state.answers[qIndex]);
+    document.getElementById(`btn-q${qIndex + 1}-next`).disabled = false;
+  }
+}
+
+// Seleciona opção visualmente e guarda no estado
+function selectOption(qIndex, optIndex) {
+  state.answers[qIndex] = optIndex;
+  highlightOption(qIndex, optIndex);
+  const qNum = qIndex + 1;
+  const btn  = document.getElementById(`btn-q${qNum}-next`);
+  if (btn) btn.disabled = false;
+}
+
+function highlightOption(qIndex, selected) {
+  for (let i = 0; i < 3; i++) {
+    const btn = document.getElementById(`opt-${qIndex}-${i}`);
+    if (btn) btn.classList.toggle('selected', i === selected);
+  }
+}
+
+// Avança para a próxima questão
+function submitQuestion(nextQIndex, nextStep) {
+  const screenId = `screen-q${nextQIndex}`;
+  buildQuestion(screenId, nextQIndex - 1, nextStep);
+  goTo(screenId);
+}
+
+/* ============================================================
+   CÁLCULO DO PERFIL
+   Maioria das respostas determina o perfil
+============================================================ */
+function calcProfile(answers) {
+  // Conta quantas vezes cada opção (0, 1, 2) foi escolhida
+  const counts = [0, 0, 0];
+  answers.forEach(a => { if (a !== undefined) counts[a]++; });
+  // O índice com mais votos ganha
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  return ['economico', 'equilibrado', 'premium'][maxIdx];
+}
+
+/* ============================================================
+   SUBMISSÃO FINAL — dispara loading e resultados
+============================================================ */
+function submitAnswers() {
+  state.profile = calcProfile(state.answers);
+  goTo('screen-loading');
+  // Simula tempo de cálculo (UX friendly)
+  setTimeout(() => {
+    renderResults();
+    goTo('screen-results');
+  }, 2200);
+}
+
+/* ============================================================
+   RENDERIZAÇÃO DOS RESULTADOS
+============================================================ */
+function renderResults() {
+  const profile  = PROFILES[state.profile];
+  const stageId  = state.stage;
+  const pIdx     = ['economico', 'equilibrado', 'premium'].indexOf(state.profile); // 0|1|2
+
+  // ---- Top 3 categorias anuais ----
+  const sorted = CATEGORIES
+    .map((c, i) => ({ ...c, annual: c.values[pIdx], idx: i }))
+    .sort((a, b) => b.annual - a.annual);
+  const top3 = sorted.slice(0, 3);
+
+  // ---- Gera HTML do ecrã de resultados ----
+  let html = `
+    <!-- Cabeçalho com perfil -->
+    <div class="results-header">
+      <div class="profile-chip ${profile.chip}">${profile.label}</div>
+      <h2 class="display-title">${profile.headline}</h2>
+      <p class="subtitle">${profile.desc}</p>
+    </div>
+
+    <!-- Hero com valor total estimado -->
+    <div class="valor-hero">
+      <p class="vh-label">Estimativa total para o 1.º ano</p>
+      <p class="vh-range">€${fmt(profile.totalMin)} – €${fmt(profile.totalMax)}</p>
+      <p class="vh-sub">intervalo adaptado ao teu perfil familiar</p>
+      <span class="vh-mensal">≈ €${fmt(profile.mensalMin)}–€${fmt(profile.mensalMax)}/mês</span>
+    </div>
+
+    <!-- Top 3 categorias anuais -->
+    <p class="section-label" style="margin-top:24px">Top 3 despesas anuais</p>
+    <div class="top-cats-grid">
+      ${top3.map(c => `
+        <div class="cat-card">
+          <div class="cat-icon">${c.icon}</div>
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-value">€${fmt(c.annual)}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Secção de etapas -->
+    <p class="section-label">Plano por etapa</p>
+    <h3 class="section-title">A tua jornada financeira</h3>
+    <p class="section-desc">
+      Cada etapa traz prioridades diferentes. Abaixo encontras os picos de despesa
+      e as decisões mais importantes para cada fase — ${stageId !== 'ano1+' ? 'a tua etapa atual está destacada' : 'o primeiro ano está concluído 🎉'}.
+    </p>
+  `;
+
+  // ---- Gera bloco para cada etapa da STAGES ----
+  STAGES.forEach(stage => {
+    const isCurrent = stage.id === stageId;
+    const topCats   = stage.topCatIndexes.map(i => ({
+      ...CATEGORIES[i],
+      phaseVal: Math.round(CATEGORIES[i].values[pIdx] * stage.weight)
+    }));
+    const maxVal     = Math.max(...topCats.map(c => c.phaseVal));
+    const decision   = stage.decisions[state.profile];
+
+    html += `
+      <div class="stage-block ${isCurrent ? 'current-stage' : ''}">
+        ${isCurrent ? '<span class="current-label">A tua etapa</span>' : ''}
+
+        <div class="sb-header">
+          <div class="stage-icon-wrap ${stage.colorClass}">${stage.icon}</div>
+          <div>
+            <div class="sb-title">${stage.title}</div>
+            <div class="sb-period">${stage.period}</div>
+          </div>
+        </div>
+
+        <!-- Top 3 categorias desta fase -->
+        <div class="sb-cats">
+          ${topCats.map(c => `
+            <div class="sb-cat-row">
+              <div class="sb-cat-left">
+                <span class="sb-cat-icon">${c.icon}</span>
+                <span>${c.name}</span>
+              </div>
+              <span class="sb-cat-value">~€${fmt(c.phaseVal)}</span>
+            </div>
+            <!-- Barra visual de proporção -->
+            <div class="sb-bar-wrap">
+              <div class="sb-bar-fill" style="width:${Math.round(c.phaseVal / maxVal * 100)}%"></div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Decisão/evento com maior impacto financeiro -->
+        <div class="sb-decision">
+          <p class="sd-label">💡 Decisão importante</p>
+          <p>${decision}</p>
+        </div>
+
+      </div>
+    `;
+  });
+
+  // ---- Rodapé e botão de recomeçar ----
+  html += `
+    <div class="divider"></div>
+    <p class="results-footer">
+      Estimativas com base em dados médios do mercado português (2024).<br/>
+      Os valores são indicativos e variam com a região, hábitos e escolhas pessoais.<br/>
+      Não constitui aconselhamento financeiro.
+    </p>
+    <button class="btn-restart" onclick="restartApp()">
+      ↺ Recalcular com outros dados
+    </button>
+  `;
+
+  document.getElementById('screen-results').innerHTML = html;
+}
+
+/* ============================================================
+   UTILITÁRIOS
+============================================================ */
+
+// Formata número com separador de milhar (ex: 1200 → "1.200")
+function fmt(n) {
+  return n.toLocaleString('pt-PT');
+}
+
+// Reinicia toda a app ao estado inicial
+function restartApp() {
+  state = { babyDate: null, stage: null, answers: [], profile: null };
+  document.getElementById('date-input').value = '';
+  document.getElementById('date-error').textContent = '';
+  document.getElementById('stage-badge').classList.remove('visible');
+  document.getElementById('btn-date-next').disabled = true;
+  goTo('screen-intro');
+}
+
+/* ============================================================
+   INICIALIZAÇÃO — barra de progresso do ecrã de data
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderProgress('progress-1', 1);
+});
+</script>
+
+</body>
+</html>
