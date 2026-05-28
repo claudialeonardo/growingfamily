@@ -3,146 +3,451 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Growing Family — Orçamento para o teu bebé</title>
+  <title>Growing Family</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
-      --cream:#FAF6F0;--cream-dark:#F2EBE0;--blush:#F0C8B0;
-      --terracota:#C4694A;--terracota-light:#E8896A;
-      --sage:#7A9E87;--sage-light:#A8C4B0;
-      --charcoal:#2C2824;--mid:#7A6E64;--light:#B0A89A;--white:#FFFFFF;
-      --card-bg:rgba(255,255,255,0.72);
-      --radius-sm:12px;--radius-md:20px;--radius-lg:32px;
-      --shadow:0 4px 24px rgba(44,40,36,0.08);
+      --cream: #FAF6F0;
+      --cream-dark: #F2EBE0;
+      --blush: #F0C8B0;
+      --terracota: #C4694A;
+      --terracota-light: #E8896A;
+      --sage: #7A9E87;
+      --sage-light: #A8C4B0;
+      --charcoal: #2C2824;
+      --mid: #7A6E64;
+      --light: #B0A89A;
+      --white: #FFFFFF;
+      
+      --primary: var(--terracota);
+      --primary-variant: var(--terracota-light);
+      --secondary: var(--sage);
+      --background: var(--cream);
+      --surface: var(--white);
+      --error: #b00020;
+      --on-primary: var(--white);
+      --on-secondary: var(--white);
+      --on-background: var(--charcoal);
+      --on-surface: var(--charcoal);
+      
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 28px;
+      --shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      --shadow-2: 0 4px 20px rgba(196,105,74,0.15);
+      --shadow-3: 0 10px 20px rgba(0,0,0,0.1);
     }
+    
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',system-ui,sans-serif;background-color:var(--cream);color:var(--charcoal);min-height:100vh;overflow-x:hidden;}
+    body{
+      font-family:'Open Sans',system-ui,sans-serif;
+      background-color: var(--cream);
+      color:var(--charcoal);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    
     body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--blush) 0%,transparent 70%);opacity:.35;pointer-events:none;z-index:0;}
     body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--sage-light) 0%,transparent 70%);opacity:.3;pointer-events:none;z-index:0;}
+
     .app-wrapper{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 20px 60px;}
-    .app-header{text-align:center;padding:48px 0 32px;}
-    .app-logo{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--terracota);}
-    .app-logo .dot{width:8px;height:8px;background:var(--terracota);border-radius:50%;}
-    .screen{display:none;animation:fadeUp .45s ease both;}
+    
+    .screen{display:none;animation:fadeUp .4s cubic-bezier(0.4, 0, 0.2, 1) both;}
     .screen.active{display:block;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-    .display-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(28px,5vw,38px);line-height:1.2;color:var(--charcoal);margin-bottom:12px;}
-    .display-title em{font-style:italic;color:var(--terracota);}
-    .subtitle{font-size:15px;color:var(--mid);line-height:1.6;margin-bottom:32px;}
-    .section-label{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--terracota);margin-bottom:8px;}
-    .progress-bar{display:flex;align-items:center;gap:6px;margin-bottom:36px;}
-    .progress-dot{height:4px;flex:1;border-radius:2px;background:var(--cream-dark);transition:background .4s;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    
+    .display-title{font-size:clamp(32px,6vw,42px);font-weight:800;line-height:1.1;color:var(--charcoal);margin-bottom:16px; letter-spacing: -0.03em;}
+    .subtitle{font-size:20px;font-weight:600;color:var(--charcoal);line-height:1.4;margin-bottom:16px;}
+    .description{font-size:16px;color:var(--mid);line-height:1.6;margin-bottom:32px;}
+    
+    .progress-bar{display:flex;align-items:center;gap:8px;margin-bottom:48px; padding-top: 48px;}
+    .progress-dot{height:4px;flex:1;border-radius:2px;background:var(--cream-dark);transition:background .3s;}
     .progress-dot.done{background:var(--terracota);}
     .progress-dot.active{background:var(--terracota-light);}
-    .card{background:var(--card-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.6);border-radius:var(--radius-lg);padding:32px;box-shadow:var(--shadow);margin-bottom:16px;}
-    .date-input-wrap label{display:block;font-size:13px;font-weight:500;color:var(--mid);margin-bottom:8px;}
-    .date-input-wrap input[type=text]{width:100%;padding:16px 20px;border-radius:var(--radius-md);border:2px solid var(--cream-dark);background:var(--white);font-family:'DM Sans',sans-serif;font-size:20px;font-weight:500;color:var(--charcoal);letter-spacing:.05em;outline:none;transition:border-color .2s;}
-    .date-input-wrap input:focus{border-color:var(--terracota-light);}
-    .date-error{font-size:13px;color:var(--terracota);margin-top:6px;min-height:18px;}
-    .stage-badge{display:inline-flex;align-items:center;gap:8px;background:var(--sage-light);color:var(--charcoal);font-size:13px;font-weight:500;padding:8px 16px;border-radius:100px;margin-top:16px;opacity:0;transition:opacity .4s;}
-    .stage-badge.visible{opacity:1;}
-    .question-title{font-size:18px;font-weight:500;color:var(--charcoal);line-height:1.5;margin-bottom:20px;}
-    .options-list{display:flex;flex-direction:column;gap:10px;}
-    .option-btn{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;border-radius:var(--radius-md);border:2px solid var(--cream-dark);background:var(--white);cursor:pointer;text-align:left;transition:all .2s;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--charcoal);line-height:1.5;}
-    .option-btn:hover{border-color:var(--terracota-light);background:#FFF8F5;transform:translateY(-1px);box-shadow:var(--shadow);}
-    .option-btn.selected{border-color:var(--terracota);background:#FFF8F5;}
-    .option-number{min-width:26px;height:26px;border-radius:50%;background:var(--cream-dark);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--mid);flex-shrink:0;transition:all .2s;}
-    .option-btn.selected .option-number{background:var(--terracota);color:var(--white);}
-    .q-counter{font-size:12px;font-weight:600;color:var(--light);letter-spacing:.1em;margin-bottom:6px;}
-    .btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:18px;border-radius:var(--radius-md);background:var(--terracota);color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 20px rgba(196,105,74,.3);}
-    .btn-primary:hover{background:var(--terracota-light);transform:translateY(-2px);box-shadow:0 8px 28px rgba(196,105,74,.35);}
-    .btn-primary:disabled{background:var(--light);box-shadow:none;cursor:not-allowed;transform:none;}
-    .btn-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mid);cursor:pointer;padding:8px 0;margin-bottom:16px;transition:color .2s;}
+    
+    .card{
+      background:rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius:var(--radius-lg);
+      padding:32px;
+      box-shadow:var(--shadow-2);
+      margin-bottom:24px;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    
+    .selection-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .selection-card-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .selection-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: var(--white);
+      border: 2px solid var(--cream-dark);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    
+    .selection-card:hover {
+      border-color: var(--terracota-light);
+      background: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    .selection-card.selected {
+      border-color: var(--terracota);
+      background: var(--white);
+      box-shadow: var(--shadow-2);
+    }
+    
+    .selection-card .material-icons-outlined {
+      font-size: 32px;
+      color: var(--terracota);
+    }
+    
+    .selection-card .card-text {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--charcoal);
+    }
+
+    .date-input-inline {
+      padding: 0 16px 20px 64px;
+      animation: slideDown 0.3s ease-out;
+    }
+    @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+
+    .date-input-wrap label{display:block;font-size:13px;font-weight:700;color:var(--mid);margin-bottom:8px; text-transform: uppercase; letter-spacing: 0.05em;}
+    .date-input-wrap input[type=text]{
+      width:100%;
+      padding:14px 18px;
+      border-radius:var(--radius-sm);
+      border:2px solid var(--cream-dark);
+      background:var(--white);
+      font-family:'Open Sans',sans-serif;
+      font-size:16px;
+      color:var(--charcoal);
+      outline:none;
+      transition:all .2s;
+    }
+    .date-input-wrap input:focus{border-color:var(--terracota); box-shadow: 0 0 0 4px rgba(196,105,74,0.1);}
+    .date-error{font-size:12px;color:var(--error);margin-top:6px;min-height:16px; font-weight: 600;}
+    
+    .stage-badge{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background: var(--cream-dark);
+      color:var(--charcoal);
+      font-size:13px;
+      font-weight:700;
+      padding:10px 14px;
+      border-radius:var(--radius-md);
+      margin-top:12px;
+      opacity:0;
+      transform: translateY(10px);
+      transition: all .4s;
+    }
+    .stage-badge.visible{opacity:1; transform: translateY(0);}
+    
+    .question-title{font-size:22px;font-weight:800;color:var(--charcoal);line-height:1.3;margin-bottom:24px;}
+    .options-list{display:flex;flex-direction:column;gap:12px;}
+    .option-btn{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      padding:20px;
+      border-radius:var(--radius-md);
+      border:2px solid var(--cream-dark);
+      background:var(--white);
+      cursor:pointer;
+      text-align:left;
+      transition:all 0.2s;
+      font-family:'Open Sans',sans-serif;
+      font-size:15px;
+      font-weight: 600;
+      color:var(--charcoal);
+      line-height:1.4;
+    }
+    .option-btn:hover{border-color: var(--terracota-light); transform: translateY(-1px);}
+    .option-btn.selected{border-color:var(--terracota); background: var(--white); box-shadow: var(--shadow-2);}
+    
+    .option-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--cream-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .option-btn.selected .option-radio {
+      border-color: var(--terracota);
+    }
+    .option-btn.selected .option-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--terracota);
+      border-radius: 50%;
+    }
+
+    .btn-primary{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      padding:18px;
+      border-radius:var(--radius-md);
+      background:var(--terracota);
+      color:var(--white);
+      font-family:'Open Sans',sans-serif;
+      font-size:16px;
+      font-weight:800;
+      border:none;
+      cursor:pointer;
+      transition:all .2s;
+      box-shadow: 0 4px 15px rgba(196,105,74,0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 12px;
+    }
+    .btn-primary:hover{background:var(--terracota-light); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(196,105,74,0.35);}
+    .btn-primary:active{transform: translateY(0);}
+    .btn-primary:disabled{background:var(--light); color: var(--white); box-shadow:none; cursor:not-allowed; opacity: 0.6;}
+    
+    .btn-back{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:none;
+      border:none;
+      font-family:'Open Sans',sans-serif;
+      font-size:14px;
+      font-weight: 800;
+      color:var(--mid);
+      cursor:pointer;
+      padding:48px 0 12px;
+      transition: color .2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
     .btn-back:hover{color:var(--charcoal);}
-    .btn-restart{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:var(--radius-md);background:transparent;color:var(--mid);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;border:2px solid var(--cream-dark);cursor:pointer;transition:all .2s;margin-top:8px;}
-    .btn-restart:hover{border-color:var(--mid);color:var(--charcoal);}
-    .btn-share{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:18px;border-radius:var(--radius-md);background:var(--sage);color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 20px rgba(122,158,135,.35);margin-top:16px;}
-    .btn-share:hover{background:var(--sage-light);transform:translateY(-2px);}
-    .modal-overlay{position:fixed;inset:0;background:rgba(44,40,36,.5);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+    
+    .btn-restart{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      width:100%;
+      padding:16px;
+      border-radius:var(--radius-md);
+      background:transparent;
+      color:var(--mid);
+      font-family:'Open Sans',sans-serif;
+      font-size:14px;
+      font-weight:700;
+      border:2px solid var(--cream-dark);
+      cursor:pointer;
+      transition:all .2s;
+      margin-top:16px;
+    }
+    .btn-restart:hover{border-color: var(--mid); color: var(--charcoal);}
+    
+    .btn-share{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      width:100%;
+      padding:18px;
+      border-radius:var(--radius-md);
+      background:var(--sage);
+      color:var(--white);
+      font-family:'Open Sans',sans-serif;
+      font-size:16px;
+      font-weight:800;
+      border:none;
+      cursor:pointer;
+      transition:all .2s;
+      box-shadow: 0 4px 15px rgba(122,158,135,0.3);
+      margin-top:32px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .btn-share:hover{background: var(--sage-light); transform: translateY(-2px);}
+
+    /* Collapsible Stages */
+    .stage-block{
+      background:var(--white);
+      border-radius:var(--radius-md);
+      margin-bottom:12px;
+      box-shadow:var(--shadow-1);
+      overflow: hidden;
+      transition: all 0.3s;
+      border: 1px solid var(--cream-dark);
+    }
+    .stage-block.current-stage {
+      border: 2px solid var(--terracota);
+    }
+    .stage-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .stage-header:hover { background: rgba(0,0,0,0.01); }
+    .stage-icon-wrap {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--cream-dark);
+      color: var(--terracota);
+    }
+    .stage-info { flex: 1; }
+    .stage-title { font-weight: 800; font-size: 16px; color: var(--charcoal); }
+    .stage-period { font-size: 13px; color: var(--mid); font-weight: 600; }
+    .stage-arrow { transition: transform 0.3s; color: var(--light); }
+    .stage-block.expanded .stage-arrow { transform: rotate(180deg); }
+    
+    .stage-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1), padding 0.3s;
+      padding: 0 24px;
+    }
+    .stage-block.expanded .stage-content {
+      max-height: 2000px;
+      transition: max-height 0.3s ease-in;
+      padding: 0 24px 24px 24px;
+    }
+    
+    .current-stage-label {
+      background: var(--terracota);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: inline-block;
+      letter-spacing: 0.05em;
+    }
+
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(44,40,36,0.6);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
     .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal-box{background:var(--white);border-radius:var(--radius-lg);padding:32px;max-width:400px;width:100%;box-shadow:0 12px 48px rgba(44,40,36,.12);}
-    .modal-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:8px;}
-    .modal-desc{font-size:14px;color:var(--mid);margin-bottom:24px;line-height:1.6;}
-    .share-options{display:flex;flex-direction:column;gap:10px;}
-    .share-opt{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:var(--radius-md);border:2px solid var(--cream-dark);background:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--charcoal);transition:all .2s;}
-    .share-opt:hover{border-color:var(--terracota-light);background:#FFF8F5;}
-    .share-opt .s-icon{font-size:24px;width:36px;text-align:center;}
-    .modal-cancel{margin-top:12px;width:100%;padding:12px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--mid);cursor:pointer;}
-    .modal-cancel:hover{color:var(--charcoal);}
-    #screen-loading{text-align:center;padding:80px 20px;}
-    .loading-icon{font-size:56px;animation:pulse 1.6s ease-in-out infinite;margin-bottom:24px;}
-    @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.7}}
-    .loading-dots{display:flex;justify-content:center;gap:6px;margin-top:16px;}
-    .loading-dots span{width:8px;height:8px;border-radius:50%;background:var(--terracota);animation:blink 1.2s ease-in-out infinite;}
+    .modal-box{background:var(--white);border-radius:var(--radius-lg);padding:40px;max-width:440px;width:100%;box-shadow: 0 20px 60px rgba(0,0,0,0.15);}
+    .modal-title{font-size:24px;font-weight: 800;margin-bottom:12px; color: var(--charcoal);}
+    .modal-desc{font-size:15px;color:var(--mid);margin-bottom:32px;line-height:1.6;}
+    .share-options{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+    .share-opt{display:flex;align-items:center;gap:16px;padding:20px;border-radius:var(--radius-md);border:2px solid var(--cream-dark);cursor:pointer;transition:all .2s; background: var(--white);}
+    .share-opt:hover{border-color:var(--terracota-light); transform: translateY(-2px);}
+    .share-opt .s-icon{font-size:28px;width:40px;text-align:center;color:var(--terracota);}
+    .modal-cancel{width:100%;padding:12px;background:none;border:none;color:var(--mid);font-weight:700;cursor:pointer;font-family:inherit; text-transform: uppercase; letter-spacing: 0.05em;}
+    
+    .results-header{text-align:center;padding:48px 0 32px;}
+    .valor-hero{
+      background: linear-gradient(135deg, var(--terracota) 0%, var(--terracota-light) 100%);
+      border-radius:var(--radius-lg);
+      padding:48px 32px;
+      text-align:center;
+      color:var(--white);
+      margin-bottom:32px;
+      box-shadow: 0 10px 30px rgba(196,105,74,0.25);
+    }
+    .vh-label{font-size:13px;font-weight:800;text-transform:uppercase;opacity:.9;margin-bottom:12px; letter-spacing: 0.15em;}
+    .vh-range{font-size:42px;font-weight:900;line-height:1;margin-bottom:12px; letter-spacing: -0.02em;}
+    .vh-sub{font-size:15px;opacity:.9; font-weight: 600;}
+    .vh-mensal{display:inline-block;background:rgba(255,255,255,0.2);border-radius:100px;padding:10px 24px;font-size:15px;font-weight:800;margin-top:24px;}
+    
+    .top-cats-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+    .cat-card{
+      background:var(--white);
+      border-radius:var(--radius-md);
+      padding:16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow:var(--shadow-1);
+      border: 1px solid var(--cream-dark);
+      transition: transform 0.2s;
+    }
+    .cat-card:hover { transform: translateX(4px); }
+    .cat-icon{font-size:28px; color: var(--terracota); flex-shrink: 0;}
+    .cat-info{flex: 1; text-align: left;}
+    .cat-name{font-size:11px;font-weight:800;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;}
+    .cat-value{font-size:18px;font-weight:800;color:var(--charcoal);}
+    
+    .sb-cats{display:flex;flex-direction:column;gap:12px;margin-bottom:20px; margin-top: 10px;}
+    .sb-cat-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
+    .sb-cat-left{display:flex;align-items:center;gap:10px;color:var(--charcoal); font-weight: 600;}
+    .sb-cat-value{font-weight:800;color:var(--terracota);}
+    .sb-bar-wrap{height:6px;background:var(--cream-dark);border-radius:3px;margin-bottom:4px;}
+    .sb-bar-fill{height:100%;border-radius:3px;background:var(--terracota-light);}
+    
+    .sb-decision{background:var(--cream-dark);border-radius:var(--radius-md);padding:20px;font-size:14px;color:var(--charcoal);line-height:1.6; border-left: 6px solid var(--terracota);}
+    .sd-label{font-size:11px;font-weight:800;text-transform:uppercase;color:var(--terracota);margin-bottom:8px; letter-spacing: 0.1em;}
+
+    /* Landing Page Visual Impact */
+    .hero-icon-wrap {
+      width: 100px; height: 100px;
+      margin: 0 auto 32px;
+      background: var(--white);
+      border-radius: 32px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-2);
+      transform: rotate(-5deg);
+      animation: heroFloat 4s ease-in-out infinite;
+    }
+    @keyframes heroFloat { 0%, 100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(2deg) translateY(-10px); } }
+    .hero-icon-wrap .material-icons-outlined { font-size: 56px; color: var(--terracota); }
+
+    .loading-dots{display:flex;justify-content:center;gap:8px;margin-top:24px;}
+    .loading-dots span{width:10px;height:10px;border-radius:50%;background:var(--terracota);animation:blink 1.2s ease-in-out infinite; opacity: 0.3;}
     .loading-dots span:nth-child(2){animation-delay:.2s;}
     .loading-dots span:nth-child(3){animation-delay:.4s;}
-    @keyframes blink{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
-    .results-header{text-align:center;padding:8px 0 24px;}
-    .profile-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:16px;}
-    .profile-chip.economico{background:#E8F4EC;color:var(--sage);}
-    .profile-chip.equilibrado{background:#FFF3E0;color:#C4832A;}
-    .profile-chip.premium{background:#FDE8E8;color:var(--terracota);}
-    .valor-hero{background:linear-gradient(135deg,var(--terracota) 0%,var(--terracota-light) 100%);border-radius:var(--radius-lg);padding:36px 28px;text-align:center;color:var(--white);margin-bottom:16px;position:relative;overflow:hidden;}
-    .valor-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.08);}
-    .valor-hero .vh-label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.8;margin-bottom:8px;}
-    .valor-hero .vh-range{font-family:'Playfair Display',serif;font-size:clamp(26px,6vw,40px);font-weight:700;line-height:1;margin-bottom:4px;}
-    .valor-hero .vh-sub{font-size:14px;opacity:.8;margin-top:6px;}
-    .valor-hero .vh-mensal{display:inline-block;background:rgba(255,255,255,.18);border-radius:100px;padding:6px 18px;font-size:14px;font-weight:500;margin-top:16px;}
-    .top-cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
-    @media(max-width:480px){.top-cats-grid{grid-template-columns:1fr;}}
-    .cat-card{background:var(--card-bg);border:1px solid rgba(255,255,255,.6);border-radius:var(--radius-md);padding:18px 16px;box-shadow:var(--shadow);text-align:center;}
-    .cat-card .cat-icon{font-size:26px;margin-bottom:8px;}
-    .cat-card .cat-name{font-size:11px;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
-    .cat-card .cat-value{font-size:18px;font-weight:600;color:var(--charcoal);}
-    .section-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--charcoal);margin-bottom:4px;}
-    .section-desc{font-size:13px;color:var(--mid);margin-bottom:20px;line-height:1.6;}
-    .stage-block{background:var(--card-bg);border:1px solid rgba(255,255,255,.6);border-radius:var(--radius-md);padding:20px;margin-bottom:12px;box-shadow:var(--shadow);position:relative;}
-    .stage-block .sb-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-    .stage-icon-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-    .stage-icon-wrap.recemnato{background:#E8F4EC;}
-    .stage-icon-wrap.mes3{background:#E8F0FD;}
-    .stage-icon-wrap.mes6{background:#FDF8E8;}
-    .stage-icon-wrap.mes9{background:#F0E8FD;}
-    .sb-title{font-size:15px;font-weight:600;}
-    .sb-period{font-size:12px;color:var(--mid);}
-    .sb-cats{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-    .sb-cat-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
-    .sb-cat-left{display:flex;align-items:center;gap:8px;color:var(--charcoal);}
-    .sb-cat-icon{font-size:16px;}
-    .sb-cat-value{font-weight:600;color:var(--terracota);}
-    .sb-bar-wrap{height:4px;background:var(--cream-dark);border-radius:2px;margin-bottom:10px;}
-    .sb-bar-fill{height:100%;border-radius:2px;background:var(--terracota-light);}
-    .sb-decision{background:var(--cream-dark);border-radius:var(--radius-sm);padding:12px 14px;font-size:13px;color:var(--charcoal);line-height:1.5;}
-    .sb-decision .sd-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--terracota);margin-bottom:4px;}
-    .stage-block.current-stage{border:2px solid var(--terracota);}
-    .current-label{position:absolute;top:-10px;right:16px;background:var(--terracota);color:white;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
-    .results-footer{text-align:center;font-size:12px;color:var(--light);line-height:1.7;padding:16px 0;}
-    .intro-illustration{text-align:center;font-size:72px;margin-bottom:24px;animation:floatIcon 3s ease-in-out infinite;}
-    @keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-    .divider{height:1px;background:var(--cream-dark);margin:24px 0;}
-    #pdf-area{position:fixed;left:-9999px;top:0;width:700px;background:#FAF6F0;padding:40px;font-family:'DM Sans',sans-serif;z-index:-1;}
+    @keyframes blink{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
+
+    #pdf-area{position:fixed;left:-9999px;top:0;width:700px;background:var(--cream);padding:40px;font-family:'Open Sans',sans-serif;z-index:-1;}
   </style>
 </head>
 <body>
 <div class="app-wrapper">
-  <header class="app-header">
-    <div class="app-logo"><span class="dot"></span>Growing Family<span class="dot"></span></div>
-  </header>
-
   <div id="screen-0" class="screen active">
-    <div class="intro-illustration">🌱</div>
-    <h1 class="display-title">O teu primeiro<br/><em>orçamento de bebé</em></h1>
-    <p class="subtitle">Adaptado à realidade portuguesa e ao perfil da tua família — para chegares à parentalidade com confiança financeira.</p>
-    <div class="card">
-      <p class="section-label">Como funciona</p>
-      <p style="font-size:14px;color:var(--mid);line-height:1.7">Responde a <strong style="color:var(--charcoal)">6 perguntas simples</strong> sobre a tua data prevista e os hábitos da tua família. Em menos de 2 minutos recebes uma estimativa personalizada para o primeiro ano do teu bebé, dividida por etapas.</p>
+    <div style="text-align: center; padding: 80px 0 40px;">
+      <div class="hero-icon-wrap">
+        <span class="material-icons-outlined">family_restroom</span>
+      </div>
+      <h1 class="display-title">Growing Family</h1>
+      <h2 class="subtitle">Quanto custa realmente o primeiro ano de um bebé em Portugal?</h2>
+      <p class="description">Recebe uma estimativa personalizada em menos de 60 segundos. Baseado em padrões reais de despesas familiares portuguesas.</p>
+      <button class="btn-primary" onclick="goTo(1)">Começar</button>
     </div>
-    <button class="btn-primary" onclick="goTo(1)">Começar ✨</button>
   </div>
 
   <div id="screen-1" class="screen"></div>
@@ -153,10 +458,14 @@
   <div id="screen-6" class="screen"></div>
 
   <div id="screen-loading" class="screen">
-    <div class="loading-icon">🧮</div>
-    <h2 class="display-title" style="font-size:24px">A calcular o teu plano…</h2>
-    <p class="subtitle">Estamos a preparar uma estimativa personalizada para a tua família.</p>
-    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <div style="text-align: center; padding: 80px 0;">
+      <div class="hero-icon-wrap" style="animation: heroFloat 2s ease-in-out infinite;">
+        <span class="material-icons-outlined">calculate</span>
+      </div>
+      <h2 class="display-title" style="font-size:24px">A calcular o teu plano…</h2>
+      <p class="subtitle">Estamos a preparar uma estimativa personalizada para a tua família.</p>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
   </div>
 
   <div id="screen-results" class="screen"></div>
@@ -169,15 +478,15 @@
     <p class="modal-desc">Escolhe como queres partilhar o teu plano financeiro.</p>
     <div class="share-options">
       <div class="share-opt" onclick="shareWhatsApp()">
-        <span class="s-icon">💬</span>
+        <span class="material-icons-outlined s-icon">chat</span>
         <div><div style="font-weight:600">WhatsApp</div><div style="font-size:12px;color:var(--mid);margin-top:2px">Envia um resumo por mensagem</div></div>
       </div>
       <div class="share-opt" onclick="shareEmail()">
-        <span class="s-icon">📧</span>
+        <span class="material-icons-outlined s-icon">email</span>
         <div><div style="font-weight:600">Email</div><div style="font-size:12px;color:var(--mid);margin-top:2px">Envia os resultados por email</div></div>
       </div>
       <div class="share-opt" onclick="downloadPDF()">
-        <span class="s-icon">📄</span>
+        <span class="material-icons-outlined s-icon">picture_as_pdf</span>
         <div><div style="font-weight:600">Descarregar PDF</div><div style="font-size:12px;color:var(--mid);margin-top:2px">Guarda o plano no teu dispositivo</div></div>
       </div>
     </div>
@@ -197,7 +506,15 @@
    answers[4] = 2ª mão (passo 6)
 ============================================================ */
 const STEPS = [
-  { type:'date' },
+  { 
+    type:'stage-selection',
+    text:'Em que fase se encontra a vossa família?',
+    options: [
+      { id: 'trying', label: 'Estamos a tentar engravidar', icon: 'favorite' },
+      { id: 'waiting', label: 'Estamos à espera do bebé', icon: 'pregnant_woman' },
+      { id: 'born', label: 'O bebé já nasceu', icon: 'child_care' }
+    ]
+  },
   {
     type:'question',
     text:'Para compras recorrentes (fraldas, higiene)…',
@@ -246,9 +563,9 @@ const STEPS = [
 ];
 
 const PROFILES = {
-  economico:  { label:'🌿 Perfil Económico',  chip:'economico',  headline:'Cada euro bem pensado',       desc:'A tua abordagem prioriza poupança inteligente sem abdicar do essencial. Com planeamento, o primeiro ano pode ser mais acessível do que imaginas.' },
-  equilibrado:{ label:'⚖️ Perfil Equilibrado', chip:'equilibrado', headline:'Conforto com consciência',    desc:'A tua família busca o equilíbrio entre qualidade e custo. Um plano realista que permite boas escolhas sem surpresas.' },
-  premium:    { label:'✨ Perfil Premium',      chip:'premium',     headline:'Tranquilidade como prioridade', desc:'Valorizas conveniência e qualidade. O teu plano reflete um primeiro ano confortável, com apoios profissionais e produtos de eleição.' }
+  economico:  { label:'Perfil Económico',  chip:'economico',  headline:'Cada euro bem pensado',       desc:'A tua abordagem prioriza poupança inteligente sem abdicar do essencial. Com planeamento, o primeiro ano pode ser mais acessível do que imaginas.' },
+  equilibrado:{ label:'Perfil Equilibrado', chip:'equilibrado', headline:'Conforto com consciência',    desc:'A tua família busca o equilíbrio entre qualidade e custo. Um plano realista que permite boas escolhas sem surpresas.' },
+  premium:    { label:'Perfil Premium',      chip:'premium',     headline:'Tranquilidade como prioridade', desc:'Valorizas conveniência e qualidade. O teu plano reflete um primeiro ano confortável, com apoios profissionais e produtos de eleição.' }
 };
 
 /* ============================================================
@@ -264,15 +581,15 @@ const PROFILES = {
 ============================================================ */
 
 // Base [eco, equil, premium]
-const CAT_FRALDAS   = { id:'fraldas',   name:'Fraldas & Higiene',         icon:'🧴', annual:[600,900,1300],  stages:{ recemnato:1, mes3:1, mes6:0.9, mes9:0.8 } };
-const CAT_SAUDE     = { id:'saude',     name:'Cuidados de Saúde',          icon:'🏥', annual:[300,700,1800],  stages:{ recemnato:0.8, mes3:0.7, mes6:0.6, mes9:0.6 } };
-const CAT_ROUPA     = { id:'roupa',     name:'Roupa & Calçado',            icon:'👕', annual:[300,500,900],   stages:{ recemnato:0.5, mes3:0.5, mes6:0.6, mes9:0.7 } };
+const CAT_FRALDAS   = { id:'fraldas',   name:'Fraldas & Higiene',         icon:'baby_changing_station', annual:[600,900,1300],  stages:{ recemnato:1, mes3:1, mes6:0.9, mes9:0.8 } };
+const CAT_SAUDE     = { id:'saude',     name:'Cuidados de Saúde',          icon:'medical_services', annual:[300,700,1800],  stages:{ recemnato:0.8, mes3:0.7, mes6:0.6, mes9:0.6 } };
+const CAT_ROUPA     = { id:'roupa',     name:'Roupa & Calçado',            icon:'checkroom', annual:[300,500,900],   stages:{ recemnato:0.5, mes3:0.5, mes6:0.6, mes9:0.7 } };
 // Cadeirinha de refeição (alta-cadeira) — adquirida ~6 meses, só aparece nessas etapas
-const CAT_CADREIF   = { id:'cadreif',   name:'Cadeirinha de Refeição',     icon:'🪑', annual:[80,150,300],    stages:{ mes6:1, mes9:0.2 } };
+const CAT_CADREIF   = { id:'cadreif',   name:'Cadeirinha de Refeição',     icon:'chair', annual:[80,150,300],    stages:{ mes6:1, mes9:0.2 } };
 // Cadeirinha auto grupo 1 (9-18kg) — adquirida ~9-12 meses
-const CAT_CADAUTO   = { id:'cadauto',   name:'Cadeirinha Auto Grupo 1',    icon:'🚗', annual:[150,300,700],   stages:{ mes9:1 } };
-const CAT_ENTRET    = { id:'entret',    name:'Entretenimento & Brinquedos',icon:'🧸', annual:[150,300,600],   stages:{ recemnato:0.3, mes3:0.5, mes6:0.7, mes9:1 } };
-const CAT_IMPREV    = { id:'imprev',    name:'Imprevistos',                icon:'🔖', annual:[300,600,1000],  stages:{ recemnato:0.5, mes3:0.4, mes6:0.3, mes9:0.3 } };
+const CAT_CADAUTO   = { id:'cadauto',   name:'Cadeirinha Auto Grupo 1',    icon:'directions_car', annual:[150,300,700],   stages:{ mes9:1 } };
+const CAT_ENTRET    = { id:'entret',    name:'Entretenimento & Brinquedos',icon:'toys', annual:[150,300,600],   stages:{ recemnato:0.3, mes3:0.5, mes6:0.7, mes9:1 } };
+const CAT_IMPREV    = { id:'imprev',    name:'Imprevistos',                icon:'emergency', annual:[300,600,1000],  stages:{ recemnato:0.5, mes3:0.4, mes6:0.3, mes9:0.3 } };
 
 // Alimentação — calculada dinamicamente (ver computeCats)
 // Creche     — calculada dinamicamente (ver computeCats)
@@ -282,34 +599,34 @@ const ALL_STATIC_CATS = [CAT_FRALDAS, CAT_SAUDE, CAT_ROUPA, CAT_CADREIF, CAT_CAD
 // Dicas por etapa e perfil — com variante para creche gratuita vs paga
 const STAGE_DECISIONS = {
   recemnato: {
-    economico:   '📋 Amamentação exclusiva elimina custos com fórmula (~€120/mês). Aproveita o subsídio parental partilhado para maximizar o apoio total do Estado.',
-    equilibrado: '📋 Cria um fundo de imprevistos equivalente a 1 mês de despesas — esta fase tem as maiores variações não planeadas de todo o primeiro ano.',
-    premium:     '📋 Consulta de enfermagem de saúde familiar pós-parto (privada): ~€60–80 por visita. Um grande impacto na tranquilidade de ambos os pais.'
+    economico:   'Amamentação exclusiva elimina custos com fórmula (~€120/mês). Aproveita o subsídio parental partilhado para maximizar o apoio total do Estado.',
+    equilibrado: 'Cria um fundo de imprevistos equivalente a 1 mês de despesas — esta fase tem as maiores variações não planeadas de todo o primeiro ano.',
+    premium:     'Consulta de enfermagem de saúde familiar pós-parto (privada): ~€60–80 por visita. Um grande impacto na tranquilidade de ambos os pais.'
   },
   mes3: {
-    economico_creche_gratis:  '📋 A Creche Feliz é totalmente gratuita — confirma a inscrição na IPSS da tua zona com antecedência, pois as listas de espera podem ser longas.',
-    economico_creche_paga:    '📋 Avalia creches comparticipadas (IPSS) — as mensalidades variam consoante o rendimento familiar e podem ser bastante inferiores às privadas.',
-    equilibrado_creche_gratis:'📋 Com a Creche Feliz garantida, o maior foco financeiro destes meses passa a ser o equipamento de saúde e a roupa de crescimento rápido.',
-    equilibrado_creche_paga:  '📋 Avalia se a licença parental alargada é financeiramente vantajosa — depende dos rendimentos do casal e pode adiar custos de creche.',
-    premium_creche_gratis:    '📋 Com creche assegurada e gratuita, pondera programas de estimulação precoce privados (baby swim, música): €50–120/mês por atividade.',
-    premium_creche_paga:      '📋 Começa a avaliar programas de estimulação precoce privados (baby swim, música): €50–120/mês — complementam bem a creche privada.'
+    economico_creche_gratis:  'A Creche Feliz é totalmente gratuita — confirma a inscrição na IPSS da tua zona com antecedência, pois as listas de espera podem ser longas.',
+    economico_creche_paga:    'Avalia creches comparticipadas (IPSS) — as mensalidades variam consoante o rendimento familiar e podem ser bastante inferiores às privadas.',
+    equilibrado_creche_gratis:'Com a Creche Feliz garantida, o maior foco financeiro destes meses passa a ser o equipamento de saúde e a roupa de crescimento rápido.',
+    equilibrado_creche_paga:  'Avalia se a licença parental alargada é financeiramente vantajosa — depende dos rendimentos do casal e pode adiar custos de creche.',
+    premium_creche_gratis:    'Com creche assegurada e gratuita, pondera programas de estimulação precoce privados (baby swim, música): €50–120/mês por atividade.',
+    premium_creche_paga:      'Começa a avaliar programas de estimulação precoce privados (baby swim, música): €50–120/mês — complementam bem a creche privada.'
   },
   mes6: {
-    economico:   '📋 Papas caseiras reduzem custos em alimentação até 60% face às industriais. A cadeirinha de refeição é a compra essencial desta fase — encontras opções sólidas a partir de €40.',
-    equilibrado: '📋 Fase de crescimento rápido: compra roupa em tamanhos maiores aproveitando saldos. A diversificação alimentar abre novas despesas — planeia com antecedência.',
-    premium:     '📋 Consulta de nutrição pediátrica (~€60–80): ajuda a estruturar a diversificação alimentar e a evitar a ansiedade parental que esta fase costuma trazer.'
+    economico:   'Papas caseiras reduzem custos em alimentação até 60% face às industriais. A cadeirinha de refeição é a compra essencial desta fase — encontras opções sólidas a partir de €40.',
+    equilibrado: 'Fase de crescimento rápido: compra roupa em tamanhos maiores aproveitando saldos. A diversificação alimentar abre novas despesas — planeia com antecedência.',
+    premium:     'Consulta de nutrição pediátrica (~€60–80): ajuda a estruturar a diversificação alimentar e a evitar a ansiedade parental que esta fase costuma trazer.'
   },
   mes9: {
-    economico:   '📋 A cadeirinha auto grupo 1 (9–18kg) é a compra de segurança mais importante desta fase — há modelos certificados e seguros a partir de €120.',
-    equilibrado: '📋 A cadeirinha auto grupo 1 é uma compra incontornável agora. Compara modelos com boa pontuação em segurança — o investimento vale a pena.',
-    premium:     '📋 Avalia um seguro de acidentes pessoais para criança — cobre hospitalização e assistência 24h a partir de €15/mês, com grande paz de espírito.'
+    economico:   'A cadeirinha auto grupo 1 (9–18kg) é a compra de segurança mais importante desta fase — há modelos certificados e seguros a partir de €120.',
+    equilibrado: 'A cadeirinha auto grupo 1 é uma compra incontornável agora. Compara modelos com boa pontuação em segurança — o investimento vale a pena.',
+    premium:     'Avalia um seguro de acidentes pessoais para criança — cobre hospitalização e assistência 24h a partir de €15/mês, com grande paz de espírito.'
   }
 };
 
 /* ============================================================
    STATE
 ============================================================ */
-let state = { babyDate:null, babyStage:null, answers:[], profile:null, resultData:null };
+let state = { selectedStage:null, babyDate:null, babyStage:null, answers:[], profile:null, resultData:null };
 
 /* ============================================================
    NAVIGATION
@@ -335,60 +652,100 @@ function progressHTML(cur) {
 function renderStep(step) {
   const el = document.getElementById('screen-'+step);
   const data = STEPS[step-1];
-  if (data.type === 'date') {
-    const saved = state.babyDate ? [
-      String(state.babyDate.getDate()).padStart(2,'0'),
-      String(state.babyDate.getMonth()+1).padStart(2,'0'),
-      state.babyDate.getFullYear()
-    ].join('-') : '';
-    el.innerHTML = `
-      <button class="btn-back" onclick="goTo(0)">← Voltar</button>
-      ${progressHTML(1)}
-      <p class="section-label">Passo 1 de 6</p>
-      <h2 class="display-title">Quando chega o <em>bebé</em>?</h2>
-      <p class="subtitle">Indica a data prevista de parto ou a data de nascimento.</p>
-      <div class="card">
-        <div class="date-input-wrap">
-          <label for="date-input">Data (dd-mm-aaaa)</label>
-          <input type="text" id="date-input" placeholder="ex: 15-09-2025" maxlength="10"
-            oninput="formatDateInput(this)" value="${saved}" />
-          <p class="date-error" id="date-error"></p>
-        </div>
-        <div class="stage-badge" id="stage-badge">
-          <span>📍</span><span id="stage-badge-text">—</span>
-        </div>
+  
+  let content = '';
+  
+  if (data.type === 'stage-selection') {
+    content = `
+      <h2 class="question-title">${data.text}</h2>
+      <div class="selection-cards">
+        ${data.options.map(opt => `
+          <div class="selection-card-wrap">
+            <div class="selection-card ${state.selectedStage === opt.id ? 'selected' : ''}" 
+                 onclick="selectStageCard('${opt.id}')">
+              <span class="material-icons-outlined">${opt.icon}</span>
+              <span class="card-text">${opt.label}</span>
+            </div>
+            ${state.selectedStage === opt.id && opt.id !== 'trying' ? `
+              <div class="date-input-inline">
+                <div class="date-input-wrap">
+                  <label id="date-label">${opt.id === 'born' ? 'Data de nascimento' : 'Data prevista de parto'}</label>
+                  <input type="text" id="date-input" placeholder="dd-mm-aaaa" maxlength="10"
+                    oninput="formatDateInput(this)" value="${state.babyDate ? formatDate(state.babyDate) : ''}" />
+                  <p class="date-error" id="date-error"></p>
+                </div>
+                <div class="stage-badge" id="stage-badge">
+                  <span class="material-icons-outlined" style="font-size: 20px;">info</span>
+                  <span id="stage-badge-text">—</span>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
       </div>
-      <button class="btn-primary" id="btn-step1-next" onclick="goTo(2)" ${state.babyDate?'':'disabled'}>Continuar →</button>`;
-    if (state.babyDate) {
-      el.querySelector('#stage-badge').classList.add('visible');
-      el.querySelector('#stage-badge-text').textContent = stageLabel(state.babyStage);
-    }
+    `;
   } else {
     const qIndex = step-2;
-    const isLast = step === 6;
-    const saved  = state.answers[qIndex];
-    el.innerHTML = `
-      <button class="btn-back" onclick="goTo(${step-1})">← Voltar</button>
-      ${progressHTML(step)}
-      <p class="section-label">Passo ${step} de 6</p>
-      <h2 class="display-title" style="font-size:22px;margin-bottom:8px">Uma questão <em>rápida</em></h2>
-      <div class="card" style="margin-bottom:16px">
-        <p class="q-counter">Pergunta ${step-1} de 5</p>
-        <p class="question-title">${data.text}</p>
-        <div class="options-list">
-          ${data.options.map((opt,i) => `
-            <button class="option-btn ${saved===i?'selected':''}" id="opt-${step}-${i}"
-              onclick="selectOption(${step},${qIndex},${i})">
-              <span class="option-number">${i+1}</span><span>${opt}</span>
-            </button>`).join('')}
-        </div>
+    const saved = state.answers[qIndex];
+    content = `
+      <h2 class="question-title">${data.text}</h2>
+      <div class="options-list">
+        ${data.options.map((opt,i) => `
+          <button class="option-btn ${saved===i?'selected':''}" 
+            onclick="selectOption(${step},${qIndex},${i})">
+            <div class="option-radio"></div>
+            <span>${opt}</span>
+          </button>`).join('')}
       </div>
-      <button class="btn-primary" id="btn-step${step}-next"
-        onclick="${isLast?'submitAnswers()':`goTo(${step+1})`}"
-        ${saved!==undefined?'':'disabled'}>
-        ${isLast?'Ver o meu plano 🎉':'Continuar →'}
-      </button>`;
+    `;
   }
+
+  const isLast = step === 6;
+  const canContinue = data.type === 'stage-selection' 
+    ? (state.selectedStage !== null) // Date is now optional in step 1
+    : state.answers[step-2] !== undefined;
+
+  el.innerHTML = `
+    <button class="btn-back" onclick="goTo(${step-1})">
+      <span class="material-icons-outlined">arrow_back</span> Voltar
+    </button>
+    ${progressHTML(step)}
+    <p style="font-size:12px; font-weight:800; color:var(--terracota); text-transform:uppercase; margin-bottom:8px; letter-spacing: 0.05em;">Passo ${step} de 6</p>
+    
+    <div class="wizard-container">
+      ${content}
+    </div>
+    
+    <button class="btn-primary" id="btn-step${step}-next"
+      onclick="${isLast ? 'submitAnswers()' : `goTo(${step+1})`}"
+      ${canContinue ? '' : 'disabled'}>
+      ${isLast ? 'Ver o meu plano' : 'Continuar'}
+    </button>`;
+
+  if (data.type === 'stage-selection' && state.babyDate) {
+    const badge = document.getElementById('stage-badge');
+    if (badge) {
+      badge.classList.add('visible');
+      document.getElementById('stage-badge-text').textContent = stageLabel(state.babyStage);
+    }
+  }
+}
+
+function formatDate(date) {
+  return [
+    String(date.getDate()).padStart(2,'0'),
+    String(date.getMonth()+1).padStart(2,'0'),
+    date.getFullYear()
+  ].join('-');
+}
+
+function selectStageCard(id) {
+  state.selectedStage = id;
+  if (id === 'trying') {
+    state.babyDate = null;
+    state.babyStage = 'gravida';
+  }
+  renderStep(1);
 }
 
 /* ============================================================
@@ -402,18 +759,23 @@ function formatDateInput(input) {
 }
 function validateDate(str) {
   const errEl=document.getElementById('date-error'), badge=document.getElementById('stage-badge'), btn=document.getElementById('btn-step1-next');
-  errEl.textContent=''; badge.classList.remove('visible'); btn.disabled=true; state.babyDate=null;
+  if(!errEl) return;
+  errEl.textContent=''; if(badge) badge.classList.remove('visible'); 
+  // No longer disabling the button based on date validity, just clearing the date state if invalid
+  state.babyDate=null;
   if (str.length<10) return;
   const [d,m,y]=str.split('-').map(Number);
   const date=new Date(y,m-1,d);
   if (date.getDate()!==d||date.getMonth()!==m-1||date.getFullYear()!==y){errEl.textContent='Data inválida.';return;}
   const now=new Date(), minY=new Date(now), maxY=new Date(now);
-  minY.setMonth(now.getMonth()-2); maxY.setMonth(now.getMonth()+10);
+  minY.setMonth(now.getMonth()-12); maxY.setMonth(now.getMonth()+10);
   if (date<minY){errEl.textContent='Data muito no passado.';return;}
-  if (date>maxY){errEl.textContent='Data muito no futuro (máx. 10 meses).';return;}
+  if (date>maxY){errEl.textContent='Data muito no futuro.';return;}
   state.babyDate=date; state.babyStage=detectStage(date,now);
-  document.getElementById('stage-badge-text').textContent=stageLabel(state.babyStage);
-  badge.classList.add('visible'); btn.disabled=false;
+  if(badge) {
+    document.getElementById('stage-badge-text').textContent=stageLabel(state.babyStage);
+    badge.classList.add('visible');
+  }
 }
 function detectStage(d,now) {
   const days=Math.floor((now-d)/86400000);
@@ -421,13 +783,12 @@ function detectStage(d,now) {
   if (days<180) return 'mes3';  if (days<270) return 'mes6'; if (days<365) return 'mes9'; return 'ano1+';
 }
 function stageLabel(s) {
-  return {gravida:'🤰 Estás na fase de preparação pré-natal',recemnato:'👶 O teu bebé é recém-nascido (0–3 meses)',mes3:'🌼 Bebé entre os 3 e os 6 meses',mes6:'🥕 Bebé entre os 6 e os 9 meses',mes9:'🎂 Bebé entre os 9 e os 12 meses','ano1+':'🥳 Bebé completou o primeiro ano!'}[s]||'—';
+  return {gravida:'Estás na fase de preparação pré-natal',recemnato:'O teu bebé é recém-nascido (0–3 meses)',mes3:'Bebé entre os 3 e os 6 meses',mes6:'Bebé entre os 6 e os 9 meses',mes9:'Bebé entre os 9 e os 12 meses','ano1+':'Bebé completou o primeiro ano!'}[s]||'—';
 }
 
 function selectOption(step,qIndex,optIndex) {
   state.answers[qIndex]=optIndex;
-  for(let i=0;i<3;i++){const b=document.getElementById(`opt-${step}-${i}`);if(b)b.classList.toggle('selected',i===optIndex);}
-  const btn=document.getElementById(`btn-step${step}-next`); if(btn) btn.disabled=false;
+  renderStep(step);
 }
 
 /* ============================================================
@@ -446,45 +807,34 @@ function submitAnswers() {
 
 /* ============================================================
    COMPUTE CATEGORIES
-   Returns array of {name, icon, annual} ready to display,
-   respecting all the user's answers.
 ============================================================ */
 function computeCats() {
   const pIdx=['economico','equilibrado','premium'].indexOf(state.profile);
-  const feedAns=state.answers[1];   // 0=amamentação excl, 1=misto, 2=fórmula excl
-  const crecheAns=state.answers[3]; // 0=familiar/creche feliz, 1=misto, 2=privado
+  const feedAns=state.answers[1];
+  const crecheAns=state.answers[3];
 
   const cats=[];
-
-  // Static categories (excluding food, creche, cadeirinha auto which are handled separately)
   ALL_STATIC_CATS.forEach(c => cats.push({ id:c.id, name:c.name, icon:c.icon, annual:c.annual[pIdx], stages:c.stages }));
 
-  // --- Alimentação ---
-  // 0–6 meses: amamentação exclusiva → €0; misto → metade fórmula; exclusiva → fórmula
-  const formulaMensalHalf=[20,40,70][pIdx]; // misto: custo parcial/mês
-  const formulaMensalFull=[40,80,130][pIdx]; // fórmula exclusiva /mês
-  // 6 meses durante o 1.º semestre (mas bebé pode já ter nascido, simplificamos para ano completo dividido)
+  const formulaMensalHalf=[20,40,70][pIdx];
+  const formulaMensalFull=[40,80,130][pIdx];
   const formulaSemestre1 = feedAns===0 ? 0 : feedAns===1 ? formulaMensalHalf*6 : formulaMensalFull*6;
-  // 6–12 meses: papas + eventual continuação de fórmula
   const papasAnual=[180,300,480][pIdx];
   const formulaSemestre2 = feedAns===0 ? 0 : feedAns===1 ? formulaMensalHalf*6 : formulaMensalFull*6;
   const alimentacaoAnual = formulaSemestre1 + formulaSemestre2 + papasAnual;
 
   if (alimentacaoAnual > 0) {
-    cats.push({ id:'alimentacao', name:'Alimentação', icon:'🍼', annual:alimentacaoAnual,
+    cats.push({ id:'alimentacao', name:'Alimentação', icon:'restaurant', annual:alimentacaoAnual,
       stages:{ recemnato: feedAns===0?0:1, mes3: feedAns===0?0:0.9, mes6:1, mes9:0.8 }
     });
   } else {
-    // Amamentação exclusiva: apenas papas a partir dos 6m
-    cats.push({ id:'alimentacao', name:'Alimentação (6m+)', icon:'🍼', annual:papasAnual,
+    cats.push({ id:'alimentacao', name:'Alimentação (6m+)', icon:'restaurant', annual:papasAnual,
       stages:{ recemnato:0, mes3:0, mes6:1, mes9:0.8 }
     });
   }
 
-  // --- Creche ---
-  // opção 0 = familiar/creche feliz = €0 SEMPRE
-  if (crecheAns===1) cats.push({ id:'creche', name:'Creche / Ama', icon:'🏡', annual:[900,1800,3000][pIdx],   stages:{ mes3:0.3, mes6:0.8, mes9:1 } });
-  if (crecheAns===2) cats.push({ id:'creche', name:'Creche Privada / Ama', icon:'🏡', annual:[3600,5400,7200][pIdx], stages:{ mes3:0.3, mes6:0.8, mes9:1 } });
+  if (crecheAns===1) cats.push({ id:'creche', name:'Creche / Ama', icon:'home', annual:[900,1800,3000][pIdx],   stages:{ mes3:0.3, mes6:0.8, mes9:1 } });
+  if (crecheAns===2) cats.push({ id:'creche', name:'Creche Privada / Ama', icon:'home', annual:[3600,5400,7200][pIdx], stages:{ mes3:0.3, mes6:0.8, mes9:1 } });
 
   return { cats, pIdx, feedAns, crecheAns };
 }
@@ -503,31 +853,39 @@ function getDecision(stageId, profileKey, crecheAns) {
 /* ============================================================
    RENDER RESULTS
 ============================================================ */
+function toggleStage(el) {
+  const block = el.closest('.stage-block');
+  const isExpanded = block.classList.contains('expanded');
+  
+  // Collapse all blocks
+  document.querySelectorAll('.stage-block').forEach(b => b.classList.remove('expanded'));
+  
+  // If the clicked one wasn't expanded, expand it
+  if (!isExpanded) {
+    block.classList.add('expanded');
+  }
+}
+
 function renderResults() {
   const profile=PROFILES[state.profile];
   const stageId=state.babyStage;
   const {cats,pIdx,feedAns,crecheAns}=computeCats();
 
-  // Total anual real
   const totalAnual=cats.reduce((s,c)=>s+c.annual,0);
-  // Build range (±15%)
   const adjMin=Math.round(totalAnual*0.87/50)*50;
   const adjMax=Math.round(totalAnual*1.15/50)*50;
   const mensalMin=Math.round(adjMin/12);
   const mensalMax=Math.round(adjMax/12);
 
-  // Top 3 by annual value — exclude zero-value items
   const top3=[...cats].filter(c=>c.annual>0).sort((a,b)=>b.annual-a.annual).slice(0,3);
 
-  // Stages — 4 stages post-birth only
   const STAGES_DEF=[
-    {id:'recemnato',title:'Recém-nascido',         period:'0 – 3 meses', icon:'👶',colorClass:'recemnato'},
-    {id:'mes3',     title:'Primeiros Progressos',  period:'3 – 6 meses', icon:'🌼',colorClass:'mes3'},
-    {id:'mes6',     title:'Diversificação Alimentar',period:'6 – 9 meses',icon:'🥕',colorClass:'mes6'},
-    {id:'mes9',     title:'Autonomia & 1.º Aniversário',period:'9 – 12 meses',icon:'🎂',colorClass:'mes9'}
+    {id:'recemnato',title:'Recém-nascido',         period:'0 – 3 meses', icon:'child_care'},
+    {id:'mes3',     title:'Primeiros Progressos',  period:'3 – 6 meses', icon:'auto_awesome'},
+    {id:'mes6',     title:'Diversificação Alimentar',period:'6 – 9 meses',icon:'restaurant'},
+    {id:'mes9',     title:'Autonomia & 1.º Aniversário',period:'9 – 12 meses',icon:'cake'}
   ];
 
-  // Stage weight: fraction of year each stage represents (roughly equal quarters)
   const stageWeight={recemnato:0.25,mes3:0.25,mes6:0.25,mes9:0.25};
 
   function stageCatsHTML(stageId) {
@@ -540,43 +898,51 @@ function renderResults() {
     const maxV=Math.max(...relevant.map(c=>c.phaseVal),1);
     return relevant.map(c=>`
       <div class="sb-cat-row">
-        <div class="sb-cat-left"><span class="sb-cat-icon">${c.icon}</span><span>${c.name}</span></div>
+        <div class="sb-cat-left"><span class="material-icons-outlined" style="font-size:18px; color:var(--terracota)">${c.icon}</span><span>${c.name}</span></div>
         <span class="sb-cat-value">~€${fmt(c.phaseVal)}</span>
       </div>
       <div class="sb-bar-wrap"><div class="sb-bar-fill" style="width:${Math.round(c.phaseVal/maxV*100)}%"></div></div>
     `).join('');
   }
 
-  const stagesHTML=STAGES_DEF.map(stage=>{
-    const isCurrent=stage.id===stageId;
-    const decision=getDecision(stage.id, state.profile, crecheAns);
+  const stagesHTML=STAGES_DEF.map((stage, idx)=>{
+    const isCurrent = stage.id === stageId;
+    const shouldExpand = isCurrent || (idx === 0 && (state.selectedStage === 'trying' || state.selectedStage === 'waiting'));
+    const decision = getDecision(stage.id, state.profile, crecheAns);
+    
     return `
-      <div class="stage-block ${isCurrent?'current-stage':''}">
-        ${isCurrent?'<span class="current-label">A tua etapa</span>':''}
-        <div class="sb-header">
-          <div class="stage-icon-wrap ${stage.colorClass}">${stage.icon}</div>
-          <div><div class="sb-title">${stage.title}</div><div class="sb-period">${stage.period}</div></div>
+      <div class="stage-block ${isCurrent ? 'current-stage' : ''} ${shouldExpand ? 'expanded' : ''}">
+        <div class="stage-header" onclick="toggleStage(this)">
+          <div class="stage-icon-wrap">
+            <span class="material-icons-outlined">${stage.icon}</span>
+          </div>
+          <div class="stage-info">
+            ${isCurrent ? '<span class="current-stage-label">A tua etapa</span>' : ''}
+            <div class="stage-title">${stage.title}</div>
+            <div class="stage-period">${stage.period}</div>
+          </div>
+          <span class="material-icons-outlined stage-arrow">expand_more</span>
         </div>
-        <div class="sb-cats">${stageCatsHTML(stage.id)}</div>
-        ${decision?`<div class="sb-decision"><p class="sd-label">💡 Decisão importante</p><p>${decision}</p></div>`:''}
+        <div class="stage-content">
+          <div class="sb-cats">${stageCatsHTML(stage.id)}</div>
+          ${decision?`<div class="sb-decision"><p class="sd-label">Decisão importante</p><p>${decision}</p></div>`:''}
+        </div>
       </div>`;
   }).join('');
 
-  // Amamentação note
   const amamentacaoNote = feedAns===0
-    ? '<div style="background:#E8F4EC;border-radius:12px;padding:12px 16px;font-size:13px;color:#2C2824;margin-bottom:16px">🤱 <strong>Amamentação exclusiva nos primeiros 6 meses:</strong> sem custos com leite em fórmula. A alimentação só gera despesa a partir da introdução alimentar (~6 meses).</div>'
+    ? '<div style="background:var(--cream-dark);border-radius:12px;padding:16px;font-size:13px;color:var(--charcoal);margin-bottom:16px; border-left: 4px solid var(--sage)"><strong>Amamentação exclusiva nos primeiros 6 meses:</strong> sem custos com leite em fórmula. A alimentação só gera despesa a partir da introdução alimentar (~6 meses).</div>'
     : '';
 
   const crecheNote = crecheAns===0
-    ? '<div style="background:#E8F4EC;border-radius:12px;padding:12px 16px;font-size:13px;color:#2C2824;margin-bottom:16px">🏡 <strong>Creche Feliz / apoio familiar:</strong> sem custos com creche ou ama durante os primeiros 3 anos.</div>'
+    ? '<div style="background:var(--cream-dark);border-radius:12px;padding:16px;font-size:13px;color:var(--charcoal);margin-bottom:16px; border-left: 4px solid var(--sage)"><strong>Creche Feliz / apoio familiar:</strong> sem custos com creche ou ama durante os primeiros 3 anos.</div>'
     : '';
 
   document.getElementById('screen-results').innerHTML = `
     <div id="results-content">
       <div class="results-header">
-        <div class="profile-chip ${profile.chip}">${profile.label}</div>
         <h2 class="display-title">${profile.headline}</h2>
-        <p class="subtitle">${profile.desc}</p>
+        <p class="description">${profile.desc}</p>
       </div>
       <div class="valor-hero">
         <p class="vh-label">Estimativa total para o 1.º ano</p>
@@ -585,28 +951,32 @@ function renderResults() {
         <span class="vh-mensal">≈ €${fmt(mensalMin)}–€${fmt(mensalMax)}/mês</span>
       </div>
       ${amamentacaoNote}${crecheNote}
-      <p class="section-label" style="margin-top:8px">Top 3 despesas anuais</p>
+      <p style="font-size:12px; font-weight:800; color:var(--terracota); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.1em;">Top 3 despesas anuais</p>
       <div class="top-cats-grid">
         ${top3.map(c=>`
           <div class="cat-card">
-            <div class="cat-icon">${c.icon}</div>
-            <div class="cat-name">${c.name}</div>
-            <div class="cat-value">€${fmt(c.annual)}</div>
+            <span class="material-icons-outlined cat-icon">${c.icon}</span>
+            <div class="cat-info">
+              <div class="cat-name">${c.name}</div>
+              <div class="cat-value">€${fmt(c.annual)}</div>
+            </div>
           </div>`).join('')}
       </div>
-      <div class="divider"></div>
-      <p class="section-label">Plano por etapa</p>
-      <h3 class="section-title">A tua jornada financeira</h3>
-      <p class="section-desc">Cada etapa traz prioridades diferentes. Abaixo encontras os picos de despesa e as decisões mais importantes${stageId!=='ano1+'?' — a tua etapa atual está destacada':''}.</p>
-      ${stagesHTML}
-      <div class="divider"></div>
-      <p class="results-footer">
+      <div style="height:1px; background:var(--cream-dark); margin:48px 0;"></div>
+      <p style="font-size:12px; font-weight:800; color:var(--terracota); text-transform:uppercase; margin-bottom:16px; letter-spacing:0.1em;">Plano por etapa</p>
+      <h3 style="font-size:24px; font-weight:800; margin-bottom:12px; color:var(--charcoal);">A vossa jornada financeira</h3>
+      <p style="font-size:15px; color:var(--mid); margin-bottom:32px; line-height:1.6;">Cada etapa traz prioridades diferentes. Abaixo encontras os picos de despesa e as decisões mais importantes.</p>
+      <div class="accordion-container">
+        ${stagesHTML}
+      </div>
+      <div style="height:1px; background:var(--cream-dark); margin:48px 0;"></div>
+      <p style="text-align:center; font-size:12px; color:var(--mid); line-height:1.7; padding:16px 0; font-weight:600;">
         Estimativas com base em dados médios do mercado português (2024).<br/>
         Os valores são indicativos e variam com a região, hábitos e escolhas pessoais.<br/>
         Não constitui aconselhamento financeiro.
       </p>
-      <button class="btn-share" onclick="openModal()"><span style="font-size:20px">📤</span> Partilhar resultados</button>
-      <button class="btn-restart" onclick="restartApp()">↺ Recalcular com outros dados</button>
+      <button class="btn-share" onclick="openModal()"><span class="material-icons-outlined">share</span> Partilhar resultados</button>
+      <button class="btn-restart" onclick="restartApp()"><span class="material-icons-outlined">refresh</span> Recalcular com outros dados</button>
     </div>`;
 
   state.resultData={profile,adjMin,adjMax,mensalMin,mensalMax,top3,cats};
@@ -620,40 +990,50 @@ function closeModal(){document.getElementById('share-modal').classList.remove('o
 
 function buildShareText() {
   const rd=state.resultData; if(!rd) return '';
-  const top=rd.top3.map(c=>`${c.icon} ${c.name}: €${fmt(c.annual)}`).join('\n');
-  return `🌱 *Growing Family — Plano do 1.º Ano*\n\n${rd.profile.label}\n\n💶 Estimativa total: €${fmt(rd.adjMin)} – €${fmt(rd.adjMax)}\n📅 Por mês: €${fmt(rd.mensalMin)}–€${fmt(rd.mensalMax)}\n\n📊 Principais categorias:\n${top}\n\n_Gerado em Growing Family_`;
+  const top=rd.top3.map(c=>`${c.name}: €${fmt(c.annual)}`).join('\n');
+  return `Growing Family — Plano do 1.º Ano\n\n${rd.profile.label}\n\nEstimativa total: €${fmt(rd.adjMin)} – €${fmt(rd.adjMax)}\nPor mês: €${fmt(rd.mensalMin)}–€${fmt(rd.mensalMax)}\n\nPrincipais categorias:\n${top}\n\nGerado em Growing Family`;
 }
 function shareWhatsApp(){window.open(`https://wa.me/?text=${encodeURIComponent(buildShareText())}`,'_blank');closeModal();}
-function shareEmail(){window.open(`mailto:?subject=${encodeURIComponent('O meu plano financeiro Growing Family')}&body=${encodeURIComponent(buildShareText().replace(/\*/g,'').replace(/_/g,''))}`,'_blank');closeModal();}
+function shareEmail(){window.open(`mailto:?subject=${encodeURIComponent('O meu plano financeiro Growing Family')}&body=${encodeURIComponent(buildShareText())}`,'_blank');closeModal();}
 
 async function downloadPDF() {
   closeModal();
   const rd=state.resultData; if(!rd) return;
   const area=document.getElementById('pdf-area');
   area.innerHTML=`
-    <div style="font-family:Arial,sans-serif;color:#2C2824;padding:20px">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
-        <div style="width:10px;height:10px;border-radius:50%;background:#C4694A"></div>
-        <span style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#C4694A">Growing Family</span>
+    <div style="font-family:'Open Sans',sans-serif;color:#2C2824;padding:40px;background-color:#FAF6F0;min-height:1000px;">
+      <div style="text-align:center;margin-bottom:40px;">
+        <h1 style="font-size:32px;font-weight:800;color:#2C2824;margin-bottom:8px;letter-spacing:-0.02em;">Growing Family</h1>
+        <p style="font-size:14px;color:#7A6E64;font-weight:600;">Estimativa personalizada para o primeiro ano</p>
       </div>
-      <h1 style="font-size:26px;margin-bottom:6px">${rd.profile.headline}</h1>
-      <p style="font-size:13px;color:#7A6E64;margin-bottom:24px">${rd.profile.desc}</p>
-      <div style="background:linear-gradient(135deg,#C4694A,#E8896A);border-radius:16px;padding:28px;color:white;text-align:center;margin-bottom:24px">
-        <p style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.8;margin-bottom:6px">Estimativa total — 1.º ano</p>
-        <p style="font-size:30px;font-weight:700;margin-bottom:4px">€${fmt(rd.adjMin)} – €${fmt(rd.adjMax)}</p>
-        <p style="font-size:13px;opacity:.8">≈ €${fmt(rd.mensalMin)}–€${fmt(rd.mensalMax)}/mês</p>
+      
+      <div style="background:linear-gradient(135deg,#C4694A,#E8896A);border-radius:24px;padding:48px 32px;color:white;text-align:center;margin-bottom:40px;box-shadow:0 10px 30px rgba(196,105,74,0.2);">
+        <p style="font-size:12px;font-weight:800;text-transform:uppercase;opacity:.9;margin-bottom:12px;letter-spacing:0.15em;">Estimativa total — 1.º ano</p>
+        <p style="font-size:42px;font-weight:900;margin-bottom:8px;letter-spacing:-0.02em;">€${fmt(rd.adjMin)} – €${fmt(rd.adjMax)}</p>
+        <p style="font-size:15px;opacity:.9;font-weight:600;">≈ €${fmt(rd.mensalMin)}–€${fmt(rd.mensalMax)}/mês</p>
       </div>
-      <h3 style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#C4694A;margin-bottom:12px">Principais despesas</h3>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+
+      <h3 style="font-size:12px;font-weight:800;text-transform:uppercase;color:#C4694A;margin-bottom:20px;letter-spacing:0.1em;border-bottom:2px solid #F2EBE0;padding-bottom:8px;">Principais despesas no 1º ano do bebé</h3>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:40px;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.05);">
         ${rd.cats.filter(c=>c.annual>0).sort((a,b)=>b.annual-a.annual).map(c=>`
           <tr style="border-bottom:1px solid #F2EBE0">
-            <td style="padding:8px 4px;font-size:14px">${c.icon} ${c.name}</td>
-            <td style="padding:8px 4px;font-size:14px;font-weight:600;text-align:right;color:#C4694A">€${fmt(c.annual)}</td>
+            <td style="padding:16px 20px;font-size:15px;font-weight:600;color:#2C2824;">${c.name}</td>
+            <td style="padding:16px 20px;font-size:16px;font-weight:800;text-align:right;color:#C4694A;">€${fmt(c.annual)}</td>
           </tr>`).join('')}
       </table>
-      <p style="font-size:10px;color:#B0A89A;line-height:1.6">Estimativas com base em dados médios do mercado português (2024). Os valores são indicativos. Não constitui aconselhamento financeiro.</p>
+      
+      <div style="background:#F2EBE0;border-radius:16px;padding:24px;margin-bottom:40px;">
+        <h4 style="font-size:14px;font-weight:800;color:#2C2824;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Perfil: ${rd.profile.headline}</h4>
+        <p style="font-size:14px;color:#7A6E64;line-height:1.6;margin:0;">${rd.profile.desc}</p>
+      </div>
+
+      <p style="text-align:center;font-size:11px;color:#B0A89A;line-height:1.6;margin-top:60px;font-weight:600;">
+        Estimativas com base em dados médios do mercado português (2024).<br/>
+        Os valores são indicativos. Não constitui aconselhamento financeiro.<br/>
+        Gerado em Growing Family
+      </p>
     </div>`;
-  area.style.cssText='position:fixed;left:0;top:0;width:700px;background:#FAF6F0;padding:40px;z-index:-1;';
+  area.style.cssText='position:fixed;left:0;top:0;width:700px;background:#FAF6F0;z-index:-1;';
   try {
     const canvas=await html2canvas(area,{scale:2,useCORS:true,backgroundColor:'#FAF6F0'});
     const {jsPDF}=window.jspdf;
@@ -661,12 +1041,12 @@ async function downloadPDF() {
     const pdfW=pdf.internal.pageSize.getWidth();
     pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,0,pdfW,(canvas.height*pdfW)/canvas.width);
     pdf.save('growing-family-plano.pdf');
-  } catch(e) { alert('Não foi possível gerar o PDF. Tenta a opção de email ou WhatsApp.'); }
+  } catch(e) { alert('Não foi possível gerar o PDF.'); }
   area.style.left='-9999px'; area.innerHTML='';
 }
 
 function fmt(n){return Number(n).toLocaleString('pt-PT');}
-function restartApp(){state={babyDate:null,babyStage:null,answers:[],profile:null,resultData:null};goTo(0);}
+function restartApp(){state={selectedStage:null,babyDate:null,babyStage:null,answers:[],profile:null,resultData:null};goTo(0);}
 </script>
 </body>
 </html>
